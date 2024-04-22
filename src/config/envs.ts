@@ -4,7 +4,7 @@ import { get } from 'env-var';
 export const envs = {
     PORT: get('PORT').required().asPortNumber(),
     JWT_SECRET: get("JWT_SECRET").required().asString(),    
-    BASE_URL: get("WEBSERVICE_URL").required().asString(),
+    BASE_URL: get("BASE_URL").required().asString(),
     
     // Mongo
     MONGO_URL: get('MONGO_URL').required().asString(),
