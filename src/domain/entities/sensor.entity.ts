@@ -4,33 +4,31 @@ import { CustomError } from "../errors/custom.errors";
 export class SensorEntity {
 
     constructor(
-        public sensor: string,
-        public value: number,
-        public receivedAt: Date,
+        public id: string,
+        public name: string,
+        public sensor: string,        
         public threshold: number,
         public sendingInterval: number,
+        public stationId: string,
+        public readings?: string[],
+        public createdAt?: Date,
+        public updatedAt?: Date,
     ) {}
 
     public static fromObj( object: { [key:string]: any }) {
-        const { id, _id, sensor, value, receivedAt, Threshold, sendingInterval } = object
+        const { id, _id, name, sensor, threshold, sendingInterval, stationId, readings, createdAt, updatedAt, } = object; 
 
         if (!id && !_id) throw CustomError.badRequest("Missing id");
-        if (!sensor) throw CustomError.badRequest("Missing sensor");
-        if (!value) throw CustomError.badRequest("Missing value");
-        
-        if (!receivedAt) {
-            throw CustomError.badRequest("Missing receivedAt");            
-        } else {
-            let newReceivedAt;
-            newReceivedAt = new Date(receivedAt);
-            if ( isNaN(newReceivedAt.getTime()) ) throw CustomError.badRequest("Invalid receivedAt");
-            object.receivedAt = newReceivedAt;            
-        }
-        
-        if (!Threshold) throw CustomError.badRequest("Missing Threshold");
+        if (!sensor) throw CustomError.badRequest("Missing sensor");            
+        if (!name) throw CustomError.badRequest("Missing name");            
+
+        if (!threshold) throw CustomError.badRequest("Missing threshold");
         if (!sendingInterval) throw CustomError.badRequest("Missing sendingInterval");
+        if (!stationId) throw CustomError.badRequest("Missing stationId");
 
-
-        return new SensorEntity( sensor, value, receivedAt, Threshold, sendingInterval)
+        // Non required properties
+        // if (!readings) throw CustomError.badRequest("Missing readings");
+        
+        return new SensorEntity( id || _id, name, sensor, threshold, sendingInterval, stationId, readings, createdAt, updatedAt, );
     }
 }

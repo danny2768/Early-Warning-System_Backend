@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, "Name is required"],
+        required: [true, 'Name is required'],
     },
     email: {
         type: String,
-        required: [true, "Email is required"],
+        required: [true, 'Email is required'],
         unique: true,
     },
     emailValidated: {
@@ -16,22 +16,23 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, "Password is required"],
+        required: [true, 'Password is required'],
     },
     role: {
         type: [String],
-        default: ["USER_ROLE"],
-        enum: ["ADMIN_ROLE", "USER_ROLE"],
-    },
-    dateCreated: {
-        type: Date,
-        default: new Date(),
-        required: true,
-    },
-    lastUpdated: {
-        type: Date,
-        default: new Date(),
-    },
+        default: ['USER_ROLE'],
+        enum: ['ADMIN_ROLE', 'USER_ROLE'],
+    },    
+}, {    
+    timestamps: true,
 });
 
-export const UserModel = mongoose.model("User", userSchema);
+userSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        delete ret._id;
+    }
+});
+
+export const UserModel = mongoose.model('User', userSchema);
