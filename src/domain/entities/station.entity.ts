@@ -1,4 +1,6 @@
+import { CountryCodeAdapter } from "../../config";
 import { CustomError } from "../errors/custom.errors";
+
 
 export interface Coordinates {
     longitude: number,
@@ -11,6 +13,7 @@ export class StationEntity {
         public id: string,
         public name: string,
         public state: string,
+        public countryCode: string,
         public coordinates: Coordinates,
         public city?: string,
         public sensors?: string[],
@@ -20,11 +23,15 @@ export class StationEntity {
     ) {}
 
     public static fromObj( object: { [key: string]: any }) {
-        const { id, _id, name, state, coordinates, city, sensors, networkId, createdAt, updatedAt, } = object;
+        const { id, _id, name, state, countryCode, coordinates, city, sensors, networkId, createdAt, updatedAt, } = object;
 
         if (!id && !_id) throw CustomError.badRequest("Missing id");
         if (!name) throw CustomError.badRequest("Missing name");
         if (!state) throw CustomError.badRequest("Missing state");
+        
+        if (!countryCode) throw CustomError.badRequest("Missing countryCode");
+        if (!CountryCodeAdapter.validateCountryCode(countryCode)) throw CustomError.badRequest("Invalid countryCode");
+
         if (!coordinates) throw CustomError.badRequest("Missing coordinates");
         
         // Non required properties
@@ -32,6 +39,6 @@ export class StationEntity {
         // if (!sensors) throw CustomError.badRequest("Missing sensors");
         // if (!networkId) throw CustomError.badRequest("Missing networkId");
 
-        return new StationEntity( id || _id, name, state, coordinates, city, sensors, networkId, createdAt, updatedAt, );
+        return new StationEntity( id || _id, name, state, countryCode, coordinates, city, sensors, networkId, createdAt, updatedAt, );
     }
 }

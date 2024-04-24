@@ -8,17 +8,21 @@ const stationSchema = new mongoose.Schema({
     city: {
         type: String,
         // required: [ true, 'city is required'],
-    },
-    // TODO: add country
+    },        
     state: {
         type: String,
         required: [ true, 'state is required'],     
+    },
+    countryCode:{
+        type: String,
+        required: [ true, 'countryCode is required'],
     },
     coordinates: {
         type: {
             longitude: Number,
             latitude: Number,
         },
+        _id: false,
         required: [ true, 'coordinates are required'],
     },    
     sensors: [{

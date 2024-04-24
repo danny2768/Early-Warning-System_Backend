@@ -25,6 +25,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
+    "country-code-lookup": "^0.1.2",
     "dotenv": "^16.4.5",
     "env-var": "^7.4.1",
     "express": "^4.19.2",

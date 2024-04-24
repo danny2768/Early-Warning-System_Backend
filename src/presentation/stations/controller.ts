@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateStationDto, CustomError } from '../../domain';
+import { CreateStationDto, CustomError, UpdateStationDto } from '../../domain';
 import { StationService } from '../services/station.service';
 
 
@@ -39,15 +39,19 @@ export class StationsController {
     };
 
     public updateStation = ( req: Request, res: Response ) => {
-        // TODO: implement updateStation
-        return res.json('updateStation')
+        const id = req.params.id;
+        const [error, updateStationDto] = UpdateStationDto.create({ ...req.body, id});
+        if (error) return res.status(400).json({error});
+
+        this.stationService.updateStation( updateStationDto! )
+            .then( station => res.json(station) )
+            .catch( error => this.handleError(error, res) );
     };
 
     public deleteStation = ( req: Request, res: Response ) => {
         this.stationService.deleteStation(req.params.id)
             .then( station => res.json(station) )
-            .catch( error => this.handleError(error, res) );
-        return res.json('deleteStation')
+            .catch( error => this.handleError(error, res) );        
     };
 
 }

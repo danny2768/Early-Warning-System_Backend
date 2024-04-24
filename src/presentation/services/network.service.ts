@@ -10,6 +10,16 @@ export class NetworkService {
         private readonly sharedService: SharedService,
     ) {}
 
+    private async validateStations( stations: string[] ) {        
+        stations.forEach(stationId => {
+            this.sharedService.validateId( stationId, `stations contains an invalid id: ${stationId}` );                    
+        });
+
+        await Promise.all(
+            stations.map( stationId => this.sharedService.validateStationById(stationId) )
+        );        
+    }
+
     public async getNetworks() {
         const networks = await NetworkModel.find();
         if (!networks) throw CustomError.badRequest('No networks has been found');        
@@ -29,18 +39,9 @@ export class NetworkService {
         const existsNetwork = await NetworkModel.findOne({ name: createNetworkDto.name });
         if (existsNetwork) throw CustomError.badRequest('Network already exists');
 
+        if (createNetworkDto.stations) await this.validateStations(createNetworkDto.stations);        
+ 
         try {            
-            if (createNetworkDto.stations) {
-                createNetworkDto.stations.forEach(stationId => {
-                    this.sharedService.validateId( stationId, `stationId contains an invalid id ${stationId}` );                    
-                });
-
-                await Promise.all(
-                    createNetworkDto.stations.map(
-                        stationId => this.sharedService.validateStationById(stationId)
-                    )
-                );
-            }                    
             const network = new NetworkModel(createNetworkDto);
             await network.save();
             return NetworkEntity.fromObj(network);
@@ -50,21 +51,11 @@ export class NetworkService {
     };
 
     public async updateNetwork( updateNetworkDto: UpdateNetworkDto) {
-        const { id, ...updateOptions } = updateNetworkDto
+        const { id, ...updateOptions } = updateNetworkDto;
 
         this.sharedService.validateId(id);
         
-        if (updateOptions.stations) {
-            updateOptions.stations.forEach(stationId => {
-                this.sharedService.validateId(stationId, `stationId contains an invalid id: ${stationId}`);
-            });
-
-            await Promise.all(
-                updateOptions.stations.map(
-                    stationId => this.sharedService.validateStationById(stationId)
-                )
-            );
-        }            
+        if (updateOptions.stations) await this.validateStations(updateOptions.stations);
         
         try {
             const network = await NetworkModel.findByIdAndUpdate({ _id: id }, updateOptions, { new: true });
