@@ -1,6 +1,7 @@
 import { SensorModel } from "../../data";
 import { CreateSensorDto, CustomError, SensorEntity } from "../../domain";
 import { SharedService } from "./shared.service";
+import { UpdateSensorDto } from '../../domain/dtos/sensor/update-sensor.dto';
 
 
 export class SensorService {
@@ -8,6 +9,11 @@ export class SensorService {
     constructor(
         private readonly sharedService: SharedService,
     ) {}
+
+    private async validateStationId( stationId: string ) {
+        this.sharedService.validateId(stationId, 'Invalid stationId');
+        await this.sharedService.validateStationById(stationId);
+    }
 
     public async getSensors() {
         const sensors = await SensorModel.find().select('-readings');
@@ -35,14 +41,10 @@ export class SensorService {
     public async createSensor( createSensorDto: CreateSensorDto ) {
         const existsSensor = await SensorModel.findOne({ name: createSensorDto.name });
         if (existsSensor) throw CustomError.badRequest('Sensor already exists');
-        
-        this.sharedService.validateId(createSensorDto.stationId, 'Invalid stationId');
+                
+        await this.validateStationId(createSensorDto.stationId);
 
-        try {
-            // TODO: Validate if stationId exists
-            // First we make sure the stationId exists
-            // const station = await StationModel.fin
-
+        try {            
             const sensor = new SensorModel(createSensorDto);
             await sensor.save();
             return SensorEntity.fromObj(sensor);
@@ -51,9 +53,19 @@ export class SensorService {
         }
     };
 
-    public async updateSensor() {
-        // TODO: Implement updateSensor
-        throw new Error('Method not implemented');
+    public async updateSensor( updateSensorDto: UpdateSensorDto ) {
+        const { id, ...updateOptions } = updateSensorDto;
+        this.sharedService.validateId(id);
+
+        if ( updateOptions.stationId ) await this.validateStationId(updateOptions.stationId);
+
+        try {
+            const sensor = await SensorModel.findByIdAndUpdate(id, updateOptions, { new: true });
+            if (!sensor) throw CustomError.badRequest(`No sensor with id ${id} has been found`);
+            return SensorEntity.fromObj(sensor);
+        } catch (error) {
+            throw CustomError.internalServer(`${error}`);
+        }
     };
 
     public async deleteSensor( id: string ) {

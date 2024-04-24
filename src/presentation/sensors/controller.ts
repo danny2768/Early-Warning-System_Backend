@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateSensorDto, CustomError } from "../../domain";
+import { CreateSensorDto, CustomError, UpdateSensorDto } from "../../domain";
 import { SensorService } from "../services";
 
 export class SensorsController {
@@ -46,8 +46,13 @@ export class SensorsController {
     };
 
     public updateSensor = ( req: Request, res: Response ) => {
-        // TODO: implement updateSensor
-        return res.json('updateSensor');
+        const id = req.params.id;
+        const [error, updateSensorDto] = UpdateSensorDto.create({ ...req.body, id});
+        if (error) return res.status(400).json({error});
+
+        this.sensorService.updateSensor( updateSensorDto! )
+            .then( sensor => res.json(sensor) )
+            .catch( error => this.handleError(error, res) );
     };
 
     public deleteSensor = ( req: Request, res: Response ) => {

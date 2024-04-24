@@ -60,7 +60,8 @@ export class NetworkService {
         try {
             const network = await NetworkModel.findByIdAndUpdate({ _id: id }, updateOptions, { new: true });
             if (!network) throw CustomError.badRequest(`No network with id ${id} has been found`);
-            return NetworkEntity.fromObj(network);
+            // return NetworkEntity.fromObj(network);
+            return network;
         } catch (error) {
             throw CustomError.internalServer(`${error}`);
         }
