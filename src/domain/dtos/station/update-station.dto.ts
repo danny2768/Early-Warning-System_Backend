@@ -46,8 +46,7 @@ export class UpdateStationDto {
 
             if (Object.keys(extraCoordinates).length > 0) return ['Property coordinates has unexpected fields'];
             if (typeof longitude !== 'number') return ['Property coordinates.longitude is missing or not a number'];        
-            if (typeof latitude !== 'number') return ['Property coordinates.latitude is missing or not a number'];
-    
+            if (typeof latitude !== 'number') return ['Property coordinates.latitude is missing or not a number'];    
         };
 
         if (city) { // TODO: check if city is a valid city name

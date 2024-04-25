@@ -24,7 +24,7 @@ const sensorSchema = new mongoose.Schema({
     },
     stationId: {
         type: Schema.Types.ObjectId,
-        ref: 'Location',
+        ref: 'Station',
         required: [ true, 'stationId is required'],
     }
 

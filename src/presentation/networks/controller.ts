@@ -36,7 +36,6 @@ export class NetworksController {
         this.networkService.createNetwork( createNetworkDto! )
             .then( network => res.json(network) )
             .catch( error => this.handleError(error, res) );
-
     };
 
     public updateNetwork = ( req: Request, res: Response ) => {

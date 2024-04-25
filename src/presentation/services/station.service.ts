@@ -1,4 +1,4 @@
-import { StationModel } from "../../data";
+import { NetworkModel, StationModel } from "../../data";
 import { CreateStationDto, CustomError, StationEntity, UpdateStationDto } from "../../domain";
 import { SharedService } from "./shared.service";
 
@@ -46,9 +46,17 @@ export class StationService {
         if ( createStationDto.networkId ) await this.validateNetworkId(createStationDto.networkId);
 
         try {
-
             const station = new StationModel(createStationDto);
             await station.save();
+
+            if ( createStationDto.networkId ) {
+                const network = await NetworkModel.findById( createStationDto.networkId );
+                if ( network && !network.stations.includes(station._id) ) {
+                    network.stations.push(station._id);
+                    await network.save();
+                }
+            }
+
             return StationEntity.fromObj(station);
         } catch (error) {
             throw CustomError.internalServer(`${error}`);            
@@ -65,6 +73,15 @@ export class StationService {
         try {
             const station = await StationModel.findByIdAndUpdate({ _id: id }, updateOptions, { new: true });
             if (!station) throw CustomError.badRequest(`No station with id ${id} has been found`);
+
+            if ( updateStationDto.networkId ) {
+                const network = await NetworkModel.findById( updateStationDto.networkId );
+                if ( network && !network.stations.includes(station._id) ) {
+                    network.stations.push(station._id);
+                    await network.save();
+                }
+            }
+
             return StationEntity.fromObj(station);
         } catch (error) {
             throw CustomError.internalServer(`${error}`);

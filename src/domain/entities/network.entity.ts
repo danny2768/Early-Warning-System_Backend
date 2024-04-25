@@ -5,7 +5,7 @@ export class NetworkEntity {
 
     constructor(
         public id: string,
-        public name?: string,
+        public name: string,
         public description?: string,
         public stations?: string[],
         public createdAt?: Date,
@@ -16,7 +16,7 @@ export class NetworkEntity {
         const { id, _id, name, description, stations, createdAt, updatedAt, } = object;
 
         if (!id && !_id) throw CustomError.badRequest("Missing id");
-        // if (!name) throw CustomError.badRequest("Missing name");
+        if (!name) throw CustomError.badRequest("Missing name");
 
         // Non required properties
         // if (!description) throw CustomError.badRequest("Missing description");

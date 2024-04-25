@@ -10,7 +10,7 @@ const networkSchema = new mongoose.Schema({
     },
     stations: [{
         type: Schema.Types.ObjectId,
-        ref: 'Sensor',      
+        ref: 'Station',      
     }],
 }, {
     timestamps: true,

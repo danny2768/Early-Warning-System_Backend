@@ -11,28 +11,39 @@ export class SharedService {
         return true;
     }
 
-    public async validateNetworkById( id: string ) {
+    public async validateNetworkById( id: string ): Promise<boolean> {
         this.validateId(id);
         const network = await NetworkModel.exists({ _id: id });
         if (!network) throw CustomError.badRequest(`No network with id ${id} has been found`);
 
-        return NetworkEntity.fromObj(network);
+        return true;
     };
 
-    public async validateStationById( id: string ) {
+    public async validateStationById( id: string ): Promise<boolean> {
         this.validateId(id);
         const station = await StationModel.exists({ _id: id });
         if (!station) throw CustomError.badRequest(`No station with id ${id} has been found`);
     
-        return StationEntity.fromObj(station);
+        return true;
     };
 
-    public async validateSensorById( id: string ) {
+    public async validateStationHaveNetworkById( id: string ): Promise<StationEntity> {
+        this.validateId(id);        
+        const station = await StationModel.findById(id);
+        if (!station) throw CustomError.badRequest(`No station with id ${id} has been found`);
+
+        if (station.networkId) throw CustomError.badRequest(`Station ${id} already has a network`);
+        
+        return StationEntity.fromObj(station);
+        
+    };
+
+    public async validateSensorById( id: string ): Promise<boolean> {
         this.validateId(id);
         const sensor = await SensorModel.exists({ _id: id });
         if (!sensor) throw CustomError.badRequest(`No sensor with id ${id} has been found`);
 
-        return SensorEntity.fromObj(sensor);
+        return true;
     };
 
 }

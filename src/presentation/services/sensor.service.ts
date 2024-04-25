@@ -1,4 +1,4 @@
-import { SensorModel } from "../../data";
+import { SensorModel, StationModel } from "../../data";
 import { CreateSensorDto, CustomError, SensorEntity } from "../../domain";
 import { SharedService } from "./shared.service";
 import { UpdateSensorDto } from '../../domain/dtos/sensor/update-sensor.dto';
@@ -47,6 +47,14 @@ export class SensorService {
         try {            
             const sensor = new SensorModel(createSensorDto);
             await sensor.save();
+            
+            // Add sensor to station
+            const station = await StationModel.findById( sensor.stationId );
+            if (station && !station.sensors.includes(sensor.id)) {                
+                station.sensors.push( sensor.id )
+                await station.save();
+            }
+
             return SensorEntity.fromObj(sensor);
         } catch (error) {
             throw CustomError.internalServer(`${error}`);
