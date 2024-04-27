@@ -66,7 +66,7 @@ export class SensorService {
         this.sharedService.validateId(id);
 
         if ( updateOptions.stationId ) await this.validateStationId(updateOptions.stationId);
-
+        // TODO: add sensor to station
         try {
             const sensor = await SensorModel.findByIdAndUpdate(id, updateOptions, { new: true });
             if (!sensor) throw CustomError.badRequest(`No sensor with id ${id} has been found`);

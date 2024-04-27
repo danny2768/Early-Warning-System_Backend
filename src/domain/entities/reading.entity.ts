@@ -5,7 +5,7 @@ export class ReadingEntity {
 
     constructor (
         public id: string,
-        public value: string,
+        public value: number,
         public sensor: string,
         public sentAt: Date,
         public createdAt?: Date,
