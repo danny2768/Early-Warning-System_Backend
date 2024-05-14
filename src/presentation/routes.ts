@@ -13,10 +13,10 @@ export class AppRoutes {
 
         // Routes
         router.use('/api/auth', AuthRoutes.routes );            
-        router.use('/api/readings', [ AuthMiddleware.validateToken ], ReadingsRoutes.routes );
-        router.use('/api/sensors',  [ AuthMiddleware.validateToken ], SensorsRoutes.routes  );
-        router.use('/api/stations', [ AuthMiddleware.validateToken ], StationsRoutes.routes );
-        router.use('/api/networks', [ AuthMiddleware.validateToken ], NetworksRoutes.routes );                
+        router.use('/api/readings', [ AuthMiddleware.validateAdminToken ], ReadingsRoutes.routes );
+        router.use('/api/sensors',  [ AuthMiddleware.validateAdminToken ], SensorsRoutes.routes  );
+        router.use('/api/stations', [ AuthMiddleware.validateAdminToken ], StationsRoutes.routes );
+        router.use('/api/networks', [ AuthMiddleware.validateAdminToken ], NetworksRoutes.routes );                
         
 
         return router;
