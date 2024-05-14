@@ -27,7 +27,7 @@ export class ReadingsController {
         if (error) return res.status(400).json({error});            
 
         this.readingService.createReading( createReadingDto! )
-            .then( reading => res.json(reading) )
+            .then( reading => res.status(201).json(reading) )
             .catch( error => this.handleError(error, res) );
     };
 

@@ -41,7 +41,7 @@ export class SensorsController {
         if (error) return res.status(400).json({error});            
 
         this.sensorService.createSensor( createSensorDto! )
-            .then( sensor => res.json(sensor) )
+            .then( sensor => res.status(201).json(sensor) )
             .catch( error => this.handleError(error, res) );        
     };
 

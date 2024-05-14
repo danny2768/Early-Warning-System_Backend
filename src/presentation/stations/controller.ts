@@ -34,7 +34,7 @@ export class StationsController {
         if (error) return res.status(400).json({error});            
         
         this.stationService.createStation( createStationDto! )
-            .then( station => res.json(station) )
+            .then( station => res.status(201).json(station) )
             .catch( error => this.handleError(error, res) );
     };
 

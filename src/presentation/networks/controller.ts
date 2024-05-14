@@ -34,7 +34,7 @@ export class NetworksController {
         if (error) return res.status(400).json({error});            
 
         this.networkService.createNetwork( createNetworkDto! )
-            .then( network => res.json(network) )
+            .then( network => res.status(201).json(network) )
             .catch( error => this.handleError(error, res) );
     };
 
