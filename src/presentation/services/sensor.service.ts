@@ -16,7 +16,7 @@ export class SensorService {
     }
 
     public async getSensors() {
-        const sensors = await SensorModel.find().select('-readings');
+        const sensors = await SensorModel.find();
         if (!sensors) throw CustomError.badRequest('No sensor has been found');
             
         return sensors.map(sensor => SensorEntity.fromObj(sensor));
@@ -24,7 +24,7 @@ export class SensorService {
 
     public async getSensorById( id: string ) {
         this.sharedService.validateId(id);
-        const sensor = await SensorModel.findById(id).select('-readings');
+        const sensor = await SensorModel.findById(id);
         if (!sensor) throw CustomError.badRequest(`No sensor with id ${id} has been found`);
 
         return SensorEntity.fromObj(sensor);

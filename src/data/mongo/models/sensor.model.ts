@@ -10,10 +10,6 @@ const sensorSchema = new mongoose.Schema({
         enum: ["level", "flow", "rain"],
         required: [ true, 'name is required'],
     },
-    readings: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Reading',    
-    }],    
     threshold: {    // Add required if necessary
         type: Number,
         required: [ true, 'threshold is required'],

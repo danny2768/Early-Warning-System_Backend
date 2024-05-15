@@ -30,13 +30,6 @@ export class ReadingService {
             const reading = new ReadingModel( createReadingDto );
             await reading.save();
 
-            // Add reading to sensor
-            const sensor = await SensorModel.findById( reading.sensor );
-            if (sensor && !sensor.readings.includes(reading.id)) {
-                sensor.readings.push( reading.id );
-                await sensor.save();
-            }
-
             return ReadingEntity.fromObj(reading);
         } catch (error) {
             throw CustomError.internalServer(`${error}`);
@@ -52,14 +45,6 @@ export class ReadingService {
         try {
             const reading = await ReadingModel.findByIdAndUpdate( id, updateOptions, { new: true });
             if (!reading) throw CustomError.badRequest(`No reading with id ${id} has been found`);
-
-            if (updateOptions.sensor) {
-                const sensor = await SensorModel.findById(reading.sensor);
-                if (sensor && !sensor.readings.includes(reading.id)) {
-                    sensor.readings.push( reading.id );
-                    await sensor.save();
-                }
-            }
 
             return ReadingEntity.fromObj(reading);        
         } catch (error) {
