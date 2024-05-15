@@ -68,7 +68,6 @@ export class StationService {
         this.sharedService.validateId(id);
 
         if ( updateOptions.networkId ) await this.validateNetworkId(updateOptions.networkId);
-        if ( updateOptions.sensors ) await this.validateSensors(updateOptions.sensors);
 
         try {
             const station = await StationModel.findByIdAndUpdate({ _id: id }, updateOptions, { new: true });

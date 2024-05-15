@@ -25,11 +25,6 @@ const stationSchema = new mongoose.Schema({
         _id: false,
         required: [ true, 'coordinates are required'],
     },    
-    sensors: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Sensor', 
-        // Can't be required since you need to create a station before creating a sensor
-    }],
     networkId: {
         type: Schema.Types.ObjectId,
         ref: 'Network',        

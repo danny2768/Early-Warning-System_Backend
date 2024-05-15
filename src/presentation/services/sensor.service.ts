@@ -48,13 +48,6 @@ export class SensorService {
             const sensor = new SensorModel(createSensorDto);
             await sensor.save();
             
-            // Add sensor to station
-            const station = await StationModel.findById( sensor.stationId );
-            if (station && !station.sensors.includes(sensor.id)) {                
-                station.sensors.push( sensor.id )
-                await station.save();
-            }
-
             return SensorEntity.fromObj(sensor);
         } catch (error) {
             throw CustomError.internalServer(`${error}`);
@@ -66,7 +59,6 @@ export class SensorService {
         this.sharedService.validateId(id);
 
         if ( updateOptions.stationId ) await this.validateStationId(updateOptions.stationId);
-        // TODO: add sensor to station
         try {
             const sensor = await SensorModel.findByIdAndUpdate(id, updateOptions, { new: true });
             if (!sensor) throw CustomError.badRequest(`No sensor with id ${id} has been found`);

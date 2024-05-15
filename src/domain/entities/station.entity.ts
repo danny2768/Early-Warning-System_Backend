@@ -15,15 +15,14 @@ export class StationEntity {
         public state: string,
         public countryCode: string,
         public coordinates: Coordinates,
-        public city?: string,
-        public sensors?: string[],
+        public city?: string,        
         public networkId?: string,
         public createdAt?: Date,
         public updatedAt?: Date,
     ) {}
 
     public static fromObj( object: { [key: string]: any }) {
-        const { id, _id, name, state, countryCode, coordinates, city, sensors, networkId, createdAt, updatedAt, } = object;
+        const { id, _id, name, state, countryCode, coordinates, city, networkId, createdAt, updatedAt, } = object;
 
         if (!id && !_id) throw CustomError.badRequest("Missing id");
         if (!name) throw CustomError.badRequest("Missing name");
@@ -39,6 +38,6 @@ export class StationEntity {
         // if (!sensors) throw CustomError.badRequest("Missing sensors");
         // if (!networkId) throw CustomError.badRequest("Missing networkId");
 
-        return new StationEntity( id || _id, name, state, countryCode, coordinates, city, sensors, networkId, createdAt, updatedAt, );
+        return new StationEntity( id || _id, name, state, countryCode, coordinates, city, networkId, createdAt, updatedAt, );
     }
 }

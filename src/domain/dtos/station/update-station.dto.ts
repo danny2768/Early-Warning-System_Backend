@@ -11,12 +11,11 @@ export class UpdateStationDto {
         public readonly countryCode?: string,
         public readonly coordinates?: Coordinates,
         public readonly city?: string,
-        public readonly sensors?: string[],
         public readonly networkId?: string,
     ) {}
 
     public static create(object: { [key: string]: any }): [ string?, UpdateStationDto? ] {
-        const { id, name, state, countryCode, coordinates, city, sensors, networkId } = object;
+        const { id, name, state, countryCode, coordinates, city, networkId } = object;
 
         if (!id) return ['Property id is required']        
         if (typeof id !== 'string') return ['id property must be a string'];
@@ -54,12 +53,6 @@ export class UpdateStationDto {
             if (city.trim() === '') return ['city property must be a non-empty string'];
         };
 
-        if (sensors) {
-            if (!Array.isArray(sensors)) return ['Property sensors must be an array'];
-            if (!sensors.every((item) => typeof item === 'string')) return ['All elements in sensors must be strings'];
-            if (sensors.length === 0) return ['Property sensors must not be empty'];
-        }        
-
-        return [undefined, new UpdateStationDto( id, name, state, countryCode, coordinates, city, sensors, networkId )];
+        return [undefined, new UpdateStationDto( id, name, state, countryCode, coordinates, city, networkId )];
     }
 }
