@@ -1,6 +1,6 @@
 import { regularExps } from "../../../config";
+import { RoleType } from "../../interfaces/types";
 
-type RoleType = 'ADMIN_ROLE' | 'USER_ROLE';
 
 export class CreateUserDto {
 

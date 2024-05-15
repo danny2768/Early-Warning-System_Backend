@@ -1,4 +1,5 @@
 import { CustomError } from "../errors/custom.errors";
+import { RoleType } from "../interfaces/types";
 
 export class UserEntity {
     
@@ -8,7 +9,7 @@ export class UserEntity {
         public email: string,
         public emailValidated: boolean,
         public password: string,
-        public role: string,
+        public role: RoleType[],
         public createdAt?: Date,
         public updatedAt?: Date,
     ) {}
