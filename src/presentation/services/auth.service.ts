@@ -55,7 +55,7 @@ export class AuthService {
 
             return {
                 user: {...userEntity},
-                // token
+                message: 'User registered successfully. Check your email to validate it.'
             };
         } catch (error) {
             throw CustomError.internalServer(`${error}`);
