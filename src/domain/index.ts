@@ -1,4 +1,5 @@
 export * from './errors/custom.errors'
+export * from './interfaces/types'
 
 // ENTITIES
 export * from './entities/user.entity'

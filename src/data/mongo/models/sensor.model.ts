@@ -5,10 +5,10 @@ const sensorSchema = new mongoose.Schema({
         type: String,        
         required: [ true, 'name is required'],
     },
-    sensor: {
+    sensorType: {
         type: String,
         enum: ["level", "flow", "rain"],
-        required: [ true, 'name is required'],
+        required: [ true, 'sensorType is required'],
     },
     threshold: {    // Add required if necessary
         type: Number,

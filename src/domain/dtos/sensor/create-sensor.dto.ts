@@ -1,27 +1,23 @@
+import { SensorType } from "../../interfaces/types";
 
-export enum SensorType {
-    Level = "level", 
-    Flow = "flow", 
-    Rain = "rain",
-}
-
+const SENSOR_TYPES: SensorType[] = ["level", "flow", "rain"];
 
 export class CreateSensorDto {
     
     private constructor(
         public readonly name: string,
-        public readonly sensor: SensorType,
+        public readonly sensorType: SensorType,
         public readonly threshold: number,
         public readonly sendingInterval: number,
         public readonly stationId: string,
     ) {}
 
     public static create(object: { [key: string]: any }): [ string?, CreateSensorDto? ] {
-        const { name, sensor, threshold, sendingInterval, stationId } = object;
+        const { name, sensorType, threshold, sendingInterval, stationId } = object;
 
         if (!name) return ['Property name is required']
-        if (!sensor) return ['Property sensor is required']
-        if (!Object.values(SensorType).includes(sensor)) return ['Property sensor is invalid']
+        if (!sensorType) return ['Property sensorType is required']
+        if (!SENSOR_TYPES.includes(sensorType)) return ['Property sensorType is invalid']
         
         if (!threshold) return ['Property threshold is required']
         if (typeof threshold !== 'number') return ['Property threshold must be a number']
@@ -34,6 +30,6 @@ export class CreateSensorDto {
         if (stationId.trim() === '') return ['stationId property must be a non-empty string'];
 
         
-        return [undefined, new CreateSensorDto( name, sensor, threshold, sendingInterval, stationId )];
+        return [undefined, new CreateSensorDto( name, sensorType, threshold, sendingInterval, stationId )];
     }
 }

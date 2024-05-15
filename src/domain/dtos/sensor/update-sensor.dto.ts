@@ -1,12 +1,13 @@
 import { SensorType } from "../..";
 
+const SENSOR_TYPES: SensorType[] = ["level", "flow", "rain"];
 
 export class UpdateSensorDto {
     
     private constructor(
         public readonly id: string,
         public readonly name?: string,        
-        public readonly sensor?: SensorType,
+        public readonly sensorType?: SensorType,
         public readonly threshold?: number,
         public readonly sendingInterval?: number,
         public readonly stationId?: string,
@@ -14,7 +15,7 @@ export class UpdateSensorDto {
 
     public static create(object: { [key: string]: any }): [ string?, UpdateSensorDto? ] {
         
-        const { id, name, sensor, threshold, sendingInterval, stationId } = object;
+        const { id, name, sensorType, threshold, sendingInterval, stationId } = object;
 
         if (!id) return ['Property id is required'];
         if (typeof id !== 'string') return ['id property must be a string'];
@@ -25,8 +26,8 @@ export class UpdateSensorDto {
             if (name.trim() === '') return ['name property must be a non-empty string'];
         };
         
-        if (sensor) {    
-            if (!Object.values(SensorType).includes(sensor)) return ['Property sensor is invalid']
+        if (sensorType) {    
+            if (!SENSOR_TYPES.includes(sensorType)) return ['Property sensorType is invalid']
         }
 
         if (threshold) {
@@ -42,6 +43,6 @@ export class UpdateSensorDto {
             if (stationId.trim() === '') return ['stationId property must be a non-empty string'];
         }
 
-        return [undefined, new UpdateSensorDto( id, name, sensor, threshold, sendingInterval, stationId )];
+        return [undefined, new UpdateSensorDto( id, name, sensorType, threshold, sendingInterval, stationId )];
     }
 }
