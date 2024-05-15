@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { AuthRoutes } from "./auth/routes";
+import { UsersRoutes } from "./users/routes";
 import { SensorsRoutes } from "./sensors/routes";
 import { StationsRoutes } from "./stations/routes";
 import { NetworksRoutes } from "./networks/routes";
@@ -13,6 +14,7 @@ export class AppRoutes {
 
         // Routes
         router.use('/api/auth', AuthRoutes.routes );            
+        router.use('/api/users', [ AuthMiddleware.validateAdminToken ], UsersRoutes.routes );
         router.use('/api/readings', [ AuthMiddleware.validateAdminToken ], ReadingsRoutes.routes );
         router.use('/api/sensors',  [ AuthMiddleware.validateAdminToken ], SensorsRoutes.routes  );
         router.use('/api/stations', [ AuthMiddleware.validateAdminToken ], StationsRoutes.routes );
