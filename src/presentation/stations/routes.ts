@@ -11,6 +11,7 @@ export class StationsRoutes {
         const controller = new StationsController(stationService);
 
         router.get("/", controller.getStations);
+        router.get("/by-network/:id", controller.getStationsByNetworkId);
         router.get("/:id", controller.getStationById);
 
         router.post("/", controller.createStation);

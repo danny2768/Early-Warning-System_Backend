@@ -39,6 +39,16 @@ export class StationService {
         return StationEntity.fromObj(station);
     };
 
+    public async getStationsByNetworkId( networkId: string ) {
+        this.validateNetworkId(networkId);
+        try {
+            const stations = await StationModel.find({ networkId });
+            return stations.map(station => StationEntity.fromObj(station));
+        } catch (error) {
+            throw CustomError.internalServer(`${error}`);                        
+        }
+    }
+
     public async createStation( createStationDto: CreateStationDto ) {
         const existsStation = await StationModel.findOne({ name: createStationDto.name });
         if (existsStation) throw CustomError.badRequest('Station already exists');

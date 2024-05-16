@@ -29,6 +29,12 @@ export class StationsController {
             .catch( error => this.handleError(error, res) );
     };
 
+    public getStationsByNetworkId = (req: Request, res: Response) => {
+        this.stationService.getStationsByNetworkId(req.params.id)
+            .then( stations => res.json(stations) )
+            .catch(error => this.handleError(error, res));
+    };
+
     public createStation = ( req: Request, res: Response ) => {
         const [error, createStationDto] = CreateStationDto.create(req.body);
         if (error) return res.status(400).json({error});            
