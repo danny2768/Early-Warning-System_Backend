@@ -18,12 +18,15 @@ const stationSchema = new mongoose.Schema({
         required: [ true, 'countryCode is required'],
     },
     coordinates: {
-        type: {
-            longitude: Number,
-            latitude: Number,
+        longitude: {
+            type: Number,
+            required: [ true, 'longitude is required'],
         },
-        _id: false,
-        required: [ true, 'coordinates are required'],
+        latitude: {
+            type: Number,
+            required: [ true, 'latitude is required'],
+        },        
+        _id: false,        
     },    
     networkId: {
         type: Schema.Types.ObjectId,

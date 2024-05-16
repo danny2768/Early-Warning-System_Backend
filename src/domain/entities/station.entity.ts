@@ -1,11 +1,7 @@
 import { CountryCodeAdapter } from "../../config";
 import { CustomError } from "../errors/custom.errors";
+import { Coordinates } from "../interfaces/coordinates.interface";
 
-
-export interface Coordinates {
-    longitude: number,
-    latitude: number,
-}
 
 export class StationEntity {
 
