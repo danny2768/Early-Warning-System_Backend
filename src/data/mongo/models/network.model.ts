@@ -8,10 +8,6 @@ const networkSchema = new mongoose.Schema({
     description: {
         type: String,
     },
-    stations: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Station',      
-    }],
 }, {
     timestamps: true,
 });

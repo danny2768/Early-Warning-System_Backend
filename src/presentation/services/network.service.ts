@@ -38,22 +38,9 @@ export class NetworkService {
         const existsNetwork = await NetworkModel.findOne({ name: createNetworkDto.name });
         if (existsNetwork) throw CustomError.badRequest('Network already exists');
 
-        if (createNetworkDto.stations) await this.validateStations(createNetworkDto.stations);        
-
         try {            
             const network = new NetworkModel(createNetworkDto);
             await network.save();
-
-            // Add network to stations
-            if (createNetworkDto.stations) {
-                for (const stationId of createNetworkDto.stations) {
-                    const station = await StationModel.findById(stationId);
-                    if (!station) throw CustomError.badRequest(`No station with id ${stationId} has been found`);
-
-                    station.networkId = network.id;
-                    await station.save();
-                }
-            }
 
             return NetworkEntity.fromObj(network);
         } catch (error) {
@@ -66,21 +53,10 @@ export class NetworkService {
 
         this.sharedService.validateId(id);
         
-        if (updateOptions.stations) await this.validateStations(updateOptions.stations);
         
         try {
             const network = await NetworkModel.findByIdAndUpdate({ _id: id }, updateOptions, { new: true });
             if (!network) throw CustomError.badRequest(`No network with id ${id} has been found`);
-
-            if (updateNetworkDto.stations) {
-                for (const stationId of updateNetworkDto.stations) {
-                    const station = await StationModel.findById(stationId);
-                    if (!station) throw CustomError.badRequest(`No station with id ${stationId} has been found`);
-
-                    station.networkId = network.id;
-                    await station.save();
-                }
-            }
 
             return NetworkEntity.fromObj(network);            
         } catch (error) {

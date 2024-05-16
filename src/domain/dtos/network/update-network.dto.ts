@@ -6,11 +6,10 @@ export class UpdateNetworkDto {
         public readonly id: string,
         public readonly name?: string,
         public readonly description?: string,
-        public readonly stations?: string[],        
     ) {}
 
     static create( object: {[ key: string ]: any }): [ string?, UpdateNetworkDto? ] {
-        const { id,  name,  description,  stations, } = object;
+        const { id,  name,  description } = object;
 
         // Check if id is provided and is a non-empty string
         if (!id) return ['Property id is required']
@@ -27,12 +26,6 @@ export class UpdateNetworkDto {
             if (description.trim() === '') return ['description property must be a non-empty string'];
         };
 
-        if (stations) {
-            if (!Array.isArray(stations)) return ['Property stations must be an array'];
-            if (!stations.every((item) => typeof item === 'string')) return ['All elements in stations must be strings'];            
-            if (stations.length === 0) return ['Property stations must not be empty'];
-        }
-
-        return [ undefined, new UpdateNetworkDto( id,  name,  description,  stations, ) ];
+        return [ undefined, new UpdateNetworkDto( id,  name,  description ) ];
     }
 }
