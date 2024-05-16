@@ -30,6 +30,16 @@ export class SensorService {
         return SensorEntity.fromObj(sensor);
     };
 
+    public async getSensorsByStationId( stationId: string ) {
+        this.validateStationId(stationId);
+        try {
+            const sensors = await SensorModel.find({ stationId });
+            return sensors.map(sensor => SensorEntity.fromObj(sensor));            
+        } catch (error) {
+            throw CustomError.internalServer(`${error}`);
+        }        
+    };
+
     public async createSensor( createSensorDto: CreateSensorDto ) {
         const existsSensor = await SensorModel.findOne({ name: createSensorDto.name });
         if (existsSensor) throw CustomError.badRequest('Sensor already exists');

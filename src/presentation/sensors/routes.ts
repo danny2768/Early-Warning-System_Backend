@@ -12,6 +12,7 @@ export class SensorsRoutes {
         const controller = new SensorsController(sensorService);
 
         router.get("/", controller.getSensors);
+        router.get("/by-station/:id", controller.getSensorByStationId);
         router.get("/:id", controller.getSensorById);
 
         router.post("/", controller.createSensor);
