@@ -1,5 +1,6 @@
 export * from './errors/custom.errors'
 export * from './interfaces/types'
+export * from './interfaces/threshold.interface'
 
 // ENTITIES
 export * from './entities/user.entity'

@@ -10,9 +10,11 @@ const sensorSchema = new mongoose.Schema({
         enum: ["level", "flow", "rain"],
         required: [ true, 'sensorType is required'],
     },
-    threshold: {    // Add required if necessary
-        type: Number,
-        required: [ true, 'threshold is required'],
+    threshold: {
+        yellow: Number,
+        orange: Number,
+        red: Number,
+        _id: false,
     },
     sendingInterval: {  // Add required if necessary
         type: Number,

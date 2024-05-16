@@ -1,4 +1,4 @@
-import { SensorType } from "../..";
+import { SensorType, Threshold } from "../..";
 
 const SENSOR_TYPES: SensorType[] = ["level", "flow", "rain"];
 
@@ -8,7 +8,7 @@ export class UpdateSensorDto {
         public readonly id: string,
         public readonly name?: string,        
         public readonly sensorType?: SensorType,
-        public readonly threshold?: number,
+        public readonly threshold?: Threshold,
         public readonly sendingInterval?: number,
         public readonly stationId?: string,
     ) {}
@@ -31,7 +31,18 @@ export class UpdateSensorDto {
         }
 
         if (threshold) {
-            if (typeof threshold !== 'number') return ['threshold property must be a number'];
+            const { yellow, orange, red, ...extraThreshold } = threshold;
+            if (Object.keys(extraThreshold).length > 0) return [`Property threshold has unexpected fields: ${Object.keys(extraThreshold).join(', ')}`]
+
+            if (yellow) {
+                if (typeof yellow !== 'number') return ['Property threshold.yellow must be a number']
+            }
+            if (orange) {
+                if (typeof orange !== 'number') return ['Property threshold.orange must be a number']
+            }
+            if (red) {
+                if (typeof red !== 'number') return ['Property threshold.red must be a number']
+            }            
         }
         
         if (sendingInterval) {
