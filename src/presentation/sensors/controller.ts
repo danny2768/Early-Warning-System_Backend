@@ -29,13 +29,6 @@ export class SensorsController {
             .catch( error => this.handleError(error, res) );
     };
 
-    public getSensorByIdWithReadings = ( req: Request, res: Response ) => {
-        const id = req.params.id;
-        this.sensorService.getSensorByIdWithReadings(id)
-            .then( sensor => res.json(sensor) )
-            .catch( error => this.handleError(error, res) );
-    };
-
     public createSensor = ( req: Request, res: Response ) => {
         const [error, createSensorDto] = CreateSensorDto.create(req.body);
         if (error) return res.status(400).json({error});            

@@ -30,14 +30,6 @@ export class SensorService {
         return SensorEntity.fromObj(sensor);
     };
 
-    public async getSensorByIdWithReadings( id: string ) {
-        this.sharedService.validateId(id);
-        const sensor = await SensorModel.findById(id);
-        if (!sensor) throw CustomError.badRequest(`No sensor with id ${id} has been found`);
-
-        return SensorEntity.fromObj(sensor);
-    };
-
     public async createSensor( createSensorDto: CreateSensorDto ) {
         const existsSensor = await SensorModel.findOne({ name: createSensorDto.name });
         if (existsSensor) throw CustomError.badRequest('Sensor already exists');

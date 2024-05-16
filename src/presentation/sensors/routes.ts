@@ -13,7 +13,6 @@ export class SensorsRoutes {
 
         router.get("/", controller.getSensors);
         router.get("/:id", controller.getSensorById);
-        router.get("/readings/:id", controller.getSensorByIdWithReadings);
 
         router.post("/", controller.createSensor);
 
