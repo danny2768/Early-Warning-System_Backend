@@ -1,5 +1,5 @@
 import { ReadingModel, SensorModel } from '../../data';
-import { CreateReadingDto, CustomError, ReadingEntity, UpdateReadingDto } from '../../domain';
+import { CreateReadingDto, CustomError, PaginationDto, ReadingEntity, UpdateReadingDto } from '../../domain';
 import { SharedService } from './shared.service';
 
 
@@ -14,11 +14,35 @@ export class ReadingService {
         await this.sharedService.validateSensorById( sensorId );    
     }
 
-    public async getReadings() {
-        const readings = await ReadingModel.find();
-        if (!readings) throw CustomError.badRequest('No readings found');
+    public async getReadings( paginationDto: PaginationDto ) {
+        const { page, limit } = paginationDto;
+        try {
+            const [ total , readings ] = await Promise.all([
+                ReadingModel.countDocuments(),
+                ReadingModel.find()
+                    .skip( (page - 1) * limit )
+                    .limit( limit )
+            ]); 
 
-        return readings.map( reading => ReadingEntity.fromObj(reading) );
+            const readingsObj = readings.map( reading => ReadingEntity.fromObj(reading) );                         
+
+            const totalPages = Math.ceil( total / limit );
+            return {
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    totalItems: total,
+                    totalPages: totalPages,
+                    next: (page < totalPages) ? `/api/readings?page=${page + 1}&limit=${limit}` : null,
+                    prev: (page - 1 > 0) ? `/api/readings?page=${page - 1}&limit=${limit}` : null,
+                    first: `/api/readings?page=1&limit=${limit}`,
+                    last: `/api/readings?page=${totalPages}&limit=${limit}`,
+                },
+                readings: readingsObj
+            }
+        } catch (error) {
+            throw CustomError.internalServer(`${error}`);            
+        }        
     };
     
 

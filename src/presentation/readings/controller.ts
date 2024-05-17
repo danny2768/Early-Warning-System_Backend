@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ReadingService } from "../services";
-import { CreateReadingDto, CustomError, UpdateReadingDto } from "../../domain";
+import { CreateReadingDto, CustomError, PaginationDto, UpdateReadingDto } from "../../domain";
 
 export class ReadingsController {
     
@@ -17,7 +17,11 @@ export class ReadingsController {
     };
 
     public getReadings = ( req: Request, res: Response ) => {
-        this.readingService.getReadings()
+        const { page = 1, limit = 10 } = req.query;
+        const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+        if (error) return res.status(400).json({error});
+        
+        this.readingService.getReadings( paginationDto! )
             .then( readings => res.json(readings) )
             .catch( error => this.handleError(error, res)) ;
     };
