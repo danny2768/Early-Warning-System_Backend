@@ -1,6 +1,9 @@
 import express, { Router } from 'express'
 import compression from 'compression'
 
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpecs from '../swagger';
+
 interface Options {
     port: number,
     routes: Router    
@@ -27,6 +30,9 @@ export class Server {
         this.app.use( express.urlencoded({ extended: true })); // x-www-form-urlencoded        
         this.app.use( compression() );
 
+        // Swagger
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs))
+        
         //* Routes
         this.app.use(this.routes);
                                 
