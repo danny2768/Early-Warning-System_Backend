@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateSensorDto, CustomError, UpdateSensorDto } from "../../domain";
+import { CreateSensorDto, CustomError, PaginationDto, UpdateSensorDto } from "../../domain";
 import { SensorService } from "../services";
 
 export class SensorsController {
@@ -33,6 +33,17 @@ export class SensorsController {
         this.sensorService.getSensorsByStationId(req.params.id)
             .then( sensor => res.json(sensor) )
             .catch( error => this.handleError(error, res) );
+    };
+
+    public getSensorReadings = ( req: Request, res: Response ) => {        
+        const { page = 1, limit = 10 } = req.query;
+        const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+        if (error) return res.status(400).json({error});
+        
+        const id = req.params.id;
+        this.sensorService.getSensorReadings( id, paginationDto!)
+            .then( readings => res.json(readings) )
+            .catch( error => this.handleError(error, res) );        
     };
 
     public createSensor = ( req: Request, res: Response ) => {

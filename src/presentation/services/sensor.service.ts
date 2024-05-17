@@ -1,5 +1,5 @@
-import { SensorModel, StationModel } from "../../data";
-import { CreateSensorDto, CustomError, SensorEntity } from "../../domain";
+import { ReadingModel, SensorModel, StationModel } from "../../data";
+import { CreateSensorDto, CustomError, PaginationDto, ReadingEntity, SensorEntity } from "../../domain";
 import { SharedService } from "./shared.service";
 import { UpdateSensorDto } from '../../domain/dtos/sensor/update-sensor.dto';
 
@@ -39,6 +39,41 @@ export class SensorService {
             throw CustomError.internalServer(`${error}`);
         }        
     };
+
+    public async getSensorReadings( id: string, paginationDto: PaginationDto ) {        
+        const { page, limit } = paginationDto;
+        
+        try {
+            const sensor = await this.getSensorById(id);
+            console.log(sensor);
+            const [ total, readings ] = await Promise.all([
+                ReadingModel.countDocuments({ sensor: id }),
+                ReadingModel.find({ sensor: id })
+                    .skip((page - 1) * limit)
+                    .limit(limit)
+            ]);
+
+            const readingsObj = readings.map(reading => ReadingEntity.fromObj(reading));
+            
+            const totalPages = Math.ceil(total / limit);
+            return  {
+                sensor: sensor,
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    totalItems: total,
+                    totalPages: totalPages,
+                    next: (page < totalPages) ? `/api/sensors/${id}/readings?page=${page + 1}&limit=${limit}` : null,
+                    prev: (page - 1 > 0) ? `/api/sensors/${id}/readings?page=${page - 1}&limit=${limit}` : null,
+                    first: `/api/sensors/${id}/readings?page=1&limit=${limit}`,
+                    last: `/api/sensors/${id}/readings?page=${totalPages}&limit=${limit}`,
+                },
+                readings: readingsObj
+            }
+        } catch (error) {
+            throw CustomError.internalServer(`${error}`);            
+        }        
+    }
 
     public async createSensor( createSensorDto: CreateSensorDto ) {
         const existsSensor = await SensorModel.findOne({ name: createSensorDto.name });
