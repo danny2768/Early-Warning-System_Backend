@@ -25,3 +25,182 @@ export class SensorsRoutes {
     };
 }
 
+/**
+ * @swagger
+ * tags:
+ *   name: Sensors
+ *   description: Sensors resource
+ */
+
+/**
+ * @swagger
+ * /api/sensors:
+ *  get:
+ *      summary: Get all sensors
+ *      tags: [Sensors]
+ *      responses:
+ *          200:
+ *              description: OK
+ */
+
+/**
+ * @swagger
+ * /api/sensors/by-station/{stationId}:
+ *  get:
+ *      summary: Get sensors by station id
+ *      tags: [Sensors]
+ *      parameters:
+ *          - in: path
+ *            name: id
+ *            schema:
+ *              type: string
+ *            required: true
+ *            description: Satation id
+ *      responses:
+ *          200:
+ *              description: OK
+ */
+
+/**
+ * @swagger
+ * /api/sensors/{id}/readings:
+ *  get:
+ *      summary: Get sensor by id w/ readings
+ *      tags: [Sensors]
+ *      parameters:
+ *          - in: path
+ *            name: id
+ *            schema:
+ *              type: string
+ *            required: true
+ *            description: Sensor id
+ *      responses:
+ *          200:
+ *              description: OK
+ */
+
+/**
+ * @swagger
+ * /api/sensors/{id}:
+ *  get:
+ *      summary: Get sensor by id
+ *      tags: [Sensors]
+ *      parameters:
+ *          - in: path
+ *            name: id
+ *            schema:
+ *              type: string
+ *            required: true
+ *            description: Sensor id
+ *      responses:
+ *          200:
+ *              description: OK
+ */
+
+/**
+ * @swagger
+ * /api/sensors:
+ *   post:
+ *     summary: Create a new sensor
+ *     tags: [Sensors]
+ *     requestBody:
+ *       description: Note - threshold property is only required if sensorType is level
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               sensorType:
+ *                 type: string
+ *                 enum: ['level', 'flow', 'rain']
+ *               sendingInterval:
+ *                 type: number
+ *               stationId:
+ *                 type: string
+ *               threshold:
+ *                 type: object                 
+ *                 properties:
+ *                   yellow:
+ *                     type: number
+ *                   orange:
+ *                     type: number
+ *                   red:
+ *                     type: number
+ *     responses:
+ *       "200":
+ *         description: A user schema
+ *       "400":
+ *         description: Bad request
+ */
+
+/**
+ * @swagger
+ * /api/sensors/{id}:
+ *   put:
+ *     summary: Update a sensor by id
+ *     tags: [Sensors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Sensor id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               sensorType:
+ *                 type: string
+ *                 enum: ['level', 'flow', 'rain']
+ *               sendingInterval:
+ *                 type: number
+ *               stationId:
+ *                 type: string
+ *               threshold:
+ *                 type: object                 
+ *                 properties:
+ *                   yellow:
+ *                     type: number
+ *                   orange:
+ *                     type: number
+ *                   red:
+ *                     type: number
+ *     responses:
+ *       "200":
+ *         description: Sensor updated successfully
+ *       "400":
+ *         description: Bad request
+ *       "404":
+ *         description: Sensor not found
+ */
+
+/**
+ * @swagger
+ * /api/sensors/{id}:
+ *   delete:
+ *     summary: Delete a sensor by id
+ *     tags: [Sensors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Sensor id
+ *     responses:
+ *       "200":
+ *         description: Sensor updated successfully
+ *       "400":
+ *         description: Bad request
+ *       "404":
+ *         description: Sensor not found
+ */
