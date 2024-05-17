@@ -44,8 +44,7 @@ export class SensorService {
         const { page, limit } = paginationDto;
         
         try {
-            const sensor = await this.getSensorById(id);
-            console.log(sensor);
+            const sensor = await this.getSensorById(id);            
             const [ total, readings ] = await Promise.all([
                 ReadingModel.countDocuments({ sensor: id }),
                 ReadingModel.find({ sensor: id })
