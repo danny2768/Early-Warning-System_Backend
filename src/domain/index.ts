@@ -29,3 +29,5 @@ export * from './dtos/station/update-station.dto'
 export * from './dtos/network/create-network.dto'
 export * from './dtos/network/update-network.dto'
 
+export * from './dtos/shared/pagination.dto'
+
