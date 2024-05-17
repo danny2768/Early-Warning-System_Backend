@@ -6,10 +6,12 @@ This repository contains the backend of an IoT platform designed for the detecti
 
 To start this repository in development mode, follow the next steps:
 
-1. Clone .env.template and rename it to .env
-2. Fill the environment variables
-3. Run `docker compose up -d`
-4. Run `npm run dev`
+1. Clone this repository.
+2. Install the necessary Node.js modules by running `npm install`.
+3. Clone .env.template and rename it to .env.
+4. Fill the environment variables.
+5. Run `docker compose up -d`.
+6. Run `npm run dev`.
 
 ## Environment Variables
 
