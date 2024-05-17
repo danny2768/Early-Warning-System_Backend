@@ -51,11 +51,11 @@ export class AuthService {
             await this.sendEmailValidationLink( user.email )
 
             const { password, ...userEntity } = UserEntity.fromObj( user );            
-            const token = await this.generateToken( { id: user.id }, '10m' );
+            // const token = await this.generateToken( { id: user.id }, '10m' );
 
             return {
                 user: {...userEntity},
-                token
+                message: 'User registered successfully. Check your email to validate it.'
             };
         } catch (error) {
             throw CustomError.internalServer(`${error}`);

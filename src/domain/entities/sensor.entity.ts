@@ -1,36 +1,32 @@
 import { CustomError } from "../errors/custom.errors";
+import { Threshold } from "../interfaces/threshold.interface";
+import { SensorType } from "../interfaces/types";
 
 
 export class SensorEntity {
 
     constructor(
-        public sensor: string,
-        public value: number,
-        public receivedAt: Date,
-        public threshold: number,
+        public id: string,
+        public name: string,
+        public sensorType: SensorType,        
         public sendingInterval: number,
+        public stationId: string,
+        public threshold?: Threshold,
+        public createdAt?: Date,
+        public updatedAt?: Date,
     ) {}
 
     public static fromObj( object: { [key:string]: any }) {
-        const { id, _id, sensor, value, receivedAt, Threshold, sendingInterval } = object
+        const { id, _id, name, sensorType, sendingInterval, stationId, threshold, createdAt, updatedAt, } = object; 
 
         if (!id && !_id) throw CustomError.badRequest("Missing id");
-        if (!sensor) throw CustomError.badRequest("Missing sensor");
-        if (!value) throw CustomError.badRequest("Missing value");
-        
-        if (!receivedAt) {
-            throw CustomError.badRequest("Missing receivedAt");            
-        } else {
-            let newReceivedAt;
-            newReceivedAt = new Date(receivedAt);
-            if ( isNaN(newReceivedAt.getTime()) ) throw CustomError.badRequest("Invalid receivedAt");
-            object.receivedAt = newReceivedAt;            
-        }
-        
-        if (!Threshold) throw CustomError.badRequest("Missing Threshold");
+        if (!name) throw CustomError.badRequest("Missing name");            
+        if (!sensorType) throw CustomError.badRequest("Missing sensorType");            
         if (!sendingInterval) throw CustomError.badRequest("Missing sendingInterval");
+        if (!stationId) throw CustomError.badRequest("Missing stationId");
+        // if (!threshold) throw CustomError.badRequest("Missing threshold");
 
-
-        return new SensorEntity( sensor, value, receivedAt, Threshold, sendingInterval)
+        
+        return new SensorEntity( id || _id, name, sensorType, sendingInterval, stationId, threshold, createdAt, updatedAt, );
     }
 }
