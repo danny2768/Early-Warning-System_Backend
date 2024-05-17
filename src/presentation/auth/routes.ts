@@ -32,3 +32,73 @@ export class AuthRoutes {
 
 }
 
+/**
+ * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: Authentication resource
+ */
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       "200":
+ *         description: A user schema
+ */  
+
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       "200":
+ *         description: A user schema
+ */
+
+/**
+ * @swagger 
+ * /api/auth/validate-email/{token}:
+ *   get:
+ *     summary: Validate a user's email
+ *     tags: [Authentication]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Email validation token
+ *     responses:
+ *       "200":
+ *         description: A user schema
+ */
