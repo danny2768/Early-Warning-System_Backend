@@ -1,5 +1,5 @@
-import { NetworkModel, StationModel } from "../../data";
-import { CustomError, NetworkEntity, PaginationDto, StationEntity } from "../../domain";
+import { NetworkModel } from "../../data";
+import { CustomError, NetworkEntity, PaginationDto } from "../../domain";
 import { SharedService } from "./shared.service";
 import { CreateNetworkDto } from '../../domain/dtos/network/create-network.dto';
 import { UpdateNetworkDto } from '../../domain/dtos/network/update-network.dto';
