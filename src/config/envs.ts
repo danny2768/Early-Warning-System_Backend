@@ -20,4 +20,6 @@ export const envs = {
     // Environment variable to send verification email
     SEND_EMAIL: get("SEND_EMAIL").default('false').asBool(),
 
+    // Frontend
+    FRONTEND_ORIGIN: get("FRONTEND_ORIGIN").required().asString(),
 }

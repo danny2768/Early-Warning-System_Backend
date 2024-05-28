@@ -16,6 +16,7 @@ async function main() {
     const server = new Server({
         port: envs.PORT,
         routes: AppRoutes.routes,
+        frontendOrigin: envs.FRONTEND_ORIGIN,
     })
     
     server.start();
