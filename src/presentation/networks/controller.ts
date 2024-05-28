@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateNetworkDto, CustomError, UpdateNetworkDto } from "../../domain";
+import { CreateNetworkDto, CustomError, PaginationDto, UpdateNetworkDto } from "../../domain";
 import { NetworkService } from "../services";
 
 
@@ -18,7 +18,11 @@ export class NetworksController {
     };
 
     public getNetworks = ( req: Request, res: Response ) => {
-        this.networkService.getNetworks()
+        const { page = 1, limit = 10 } = req.query;
+        const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+        if (error) return res.status(400).json({error});
+
+        this.networkService.getNetworks( paginationDto! )
             .then( networks => res.json(networks) )
             .catch( error => this.handleError(error, res) );
     };

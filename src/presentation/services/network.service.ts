@@ -1,5 +1,5 @@
 import { NetworkModel, StationModel } from "../../data";
-import { CustomError, NetworkEntity, StationEntity } from "../../domain";
+import { CustomError, NetworkEntity, PaginationDto, StationEntity } from "../../domain";
 import { SharedService } from "./shared.service";
 import { CreateNetworkDto } from '../../domain/dtos/network/create-network.dto';
 import { UpdateNetworkDto } from '../../domain/dtos/network/update-network.dto';
@@ -10,11 +10,35 @@ export class NetworkService {
         private readonly sharedService: SharedService,
     ) {}
 
-    public async getNetworks() {
-        const networks = await NetworkModel.find();
-        if (!networks) throw CustomError.badRequest('No networks has been found');        
+    public async getNetworks( paginationDto: PaginationDto ) {
+        const { page, limit } = paginationDto;
+        try {
+            const [ total, networks ] = await Promise.all([
+                NetworkModel.countDocuments(),
+                NetworkModel.find()
+                    .skip( (page - 1) * limit )
+                    .limit( limit )
+            ]);
+
+            const networksObj = networks.map( network => NetworkEntity.fromObj(network) );
             
-        return networks.map(network => NetworkEntity.fromObj(network));
+            const totalPages = Math.ceil( total / limit );
+            return {
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    totalItems: total,
+                    totalPages: totalPages,
+                    next: (page < totalPages) ? `/api/networks?page=${page + 1}&limit=${limit}` : null,
+                    prev: (page - 1 > 0) ? `/api/networks?page=${page - 1}&limit=${limit}` : null,
+                    first: `/api/networks?page=1&limit=${limit}`,
+                    last: `/api/networks?page=${totalPages}&limit=${limit}`,
+                },
+                networks: networksObj
+            }
+        } catch (error) {
+            throw CustomError.internalServer(`${error}`);
+        }
     };
 
     public async getNetworkById( id: string ) {
