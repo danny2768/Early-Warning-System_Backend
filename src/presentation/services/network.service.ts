@@ -10,15 +10,6 @@ export class NetworkService {
         private readonly sharedService: SharedService,
     ) {}
 
-    private async validateStations( stations: string[] ) {
-        // It validates if the station exists and if the station have a network
-        for (const stationId of stations) {
-            this.sharedService.validateId(stationId, `stations contains an invalid id: ${stationId}`);
-            // await this.sharedService.validateStationById(stationId);
-            await this.sharedService.validateStationHaveNetworkById(stationId);
-        }
-    }
-
     public async getNetworks() {
         const networks = await NetworkModel.find();
         if (!networks) throw CustomError.badRequest('No networks has been found');        
