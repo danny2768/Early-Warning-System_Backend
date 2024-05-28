@@ -17,7 +17,11 @@ export class SensorsController {
     };
 
     public getSensors = ( req: Request, res: Response ) => {
-        this.sensorService.getSensors()
+        const { page = 1, limit = 10 } = req.query;
+        const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+        if (error) return res.status(400).json({error});
+        
+        this.sensorService.getSensors( paginationDto! )
             .then( sensors => res.json(sensors) )
             .catch( error => this.handleError(error, res) );        
     };

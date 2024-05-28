@@ -15,11 +15,36 @@ export class SensorService {
         await this.sharedService.validateStationById(stationId);
     }
 
-    public async getSensors() {
-        const sensors = await SensorModel.find();
-        if (!sensors) throw CustomError.badRequest('No sensor has been found');
+    public async getSensors( paginationDto: PaginationDto ) {
+        const { page, limit } = paginationDto;
+        try {
+            const [ total , sensors ] = await Promise.all([
+                SensorModel.countDocuments(),
+                SensorModel.find()
+                    .skip( (page - 1) * limit )
+                    .limit( limit )
+            ]);          
             
-        return sensors.map(sensor => SensorEntity.fromObj(sensor));
+            const sensorsObj = sensors.map(sensor => SensorEntity.fromObj(sensor));
+
+            const totalPages = Math.ceil( total / limit );
+            return {
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    totalItems: total,
+                    totalPages: totalPages,
+                    next: (page < totalPages) ? `/api/sensors?page=${page + 1}&limit=${limit}` : null,
+                    prev: (page - 1 > 0) ? `/api/sensors?page=${page - 1}&limit=${limit}` : null,
+                    first: `/api/sensors?page=1&limit=${limit}`,
+                    last: `/api/sensors?page=${totalPages}&limit=${limit}`,
+                },
+                sensors: sensorsObj
+            }
+
+        } catch (error) {
+            throw CustomError.internalServer(`${error}`);            
+        }        
     };
 
     public async getSensorById( id: string ) {
