@@ -41,7 +41,7 @@ export class AuthRoutes {
 
 /**
  * @swagger
- * /api/auth/login:
+ * /auth/login:
  *   post:
  *     summary: Log in a user
  *     tags: [Authentication]
@@ -63,7 +63,7 @@ export class AuthRoutes {
 
 /**
  * @swagger
- * /api/auth/register:
+ * /auth/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Authentication]
@@ -87,7 +87,7 @@ export class AuthRoutes {
 
 /**
  * @swagger 
- * /api/auth/validate-email/{token}:
+ * /auth/validate-email/{token}:
  *   get:
  *     summary: Validate a user's email
  *     tags: [Authentication]

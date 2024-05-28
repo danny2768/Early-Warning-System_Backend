@@ -13,7 +13,7 @@ export class AppRoutes {
         const router = Router();
 
         // Routes
-        router.use('/api/auth', AuthRoutes.routes );            
+        router.use('/auth', AuthRoutes.routes );            
         router.use('/api/users', [ AuthMiddleware.validateAdminToken ], UsersRoutes.routes );
         router.use('/api/readings', [ AuthMiddleware.validateAdminToken ], ReadingsRoutes.routes );
         router.use('/api/sensors',  [ AuthMiddleware.validateAdminToken ], SensorsRoutes.routes  );
