@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateStationDto, CustomError, UpdateStationDto } from '../../domain';
+import { CreateStationDto, CustomError, PaginationDto, UpdateStationDto } from '../../domain';
 import { StationService } from '../services/station.service';
 
 
@@ -18,7 +18,11 @@ export class StationsController {
     };
 
     public getStations = ( req: Request, res: Response ) => {
-        this.stationService.getStations()
+        const { page = 1, limit = 10 } = req.query;
+        const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+        if (error) return res.status(400).json({error});
+        
+        this.stationService.getStations( paginationDto! )
             .then( stations => res.json(stations) )
             .catch( error => this.handleError(error, res) );
     };

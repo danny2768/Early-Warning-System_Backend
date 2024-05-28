@@ -1,5 +1,5 @@
 import { NetworkModel, StationModel } from "../../data";
-import { CreateStationDto, CustomError, StationEntity, UpdateStationDto } from "../../domain";
+import { CreateStationDto, CustomError, PaginationDto, StationEntity, UpdateStationDto } from "../../domain";
 import { SharedService } from "./shared.service";
 
 
@@ -24,11 +24,36 @@ export class StationService {
         await this.sharedService.validateNetworkById(networkId); // DB validation existance
     }
 
-    public async getStations() {
-        const stations = await StationModel.find();
-        if (!stations) throw CustomError.badRequest('No station has been found');
+    public async getStations( paginationDto: PaginationDto ) {
+        const { page, limit } = paginationDto;
+        try {
+            const [ total, stations ] = await Promise.all([
+                StationModel.countDocuments(),
+                StationModel.find()
+                    .skip( (page - 1) * limit )
+                    .limit( limit )
+            ]);
 
-        return stations.map(station => StationEntity.fromObj(station));
+            const stationsObj = stations.map( station => StationEntity.fromObj(station) );
+
+            const totalPages = Math.ceil( total / limit );
+
+            return {
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    totalItems: total,
+                    totalPages: totalPages,
+                    next: (page < totalPages) ? `/api/stations?page=${page + 1}&limit=${limit}` : null,
+                    prev: (page - 1 > 0) ? `/api/stations?page=${page - 1}&limit=${limit}` : null,
+                    first: `/api/stations?page=1&limit=${limit}`,
+                    last: `/api/stations?page=${totalPages}&limit=${limit}`,
+                },
+                stations: stationsObj
+            }
+        } catch (error) {
+            throw CustomError.internalServer(`${error}`);                        
+        }    
     };
 
     public async getStationById( id: string ) {
