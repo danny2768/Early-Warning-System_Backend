@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateUserDto, CustomError, UpdateUserDto } from "../../domain";
+import { CreateUserDto, CustomError, PaginationDto, UpdateUserDto } from "../../domain";
 import { UserService } from "../services";
 
 
@@ -19,7 +19,11 @@ export class UsersController {
     };
 
     public getUsers = ( req: Request, res: Response ) => {
-        this.userService.getUsers()
+        const { page = 1, limit = 10 } = req.query;
+        const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+        if (error) return res.status(400).json({error});
+
+        this.userService.getUsers( paginationDto! )
             .then( users => res.json(users) )
             .catch( error => this.handleError(error, res) );
     };
