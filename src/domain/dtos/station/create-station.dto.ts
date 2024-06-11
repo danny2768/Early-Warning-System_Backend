@@ -9,8 +9,8 @@ export class CreateStationDto {
         public readonly state: string,
         public readonly countryCode: string,
         public readonly coordinates: Coordinates,
+        public readonly networkId: string,
         public readonly city?: string,        
-        public readonly networkId?: string,
     ) {}
 
     public static create(object: { [key: string]: any }): [ string?, CreateStationDto? ] {
@@ -30,6 +30,8 @@ export class CreateStationDto {
         if (Object.keys(extraCoordinates).length > 0) return ['Property coordinates has unexpected fields'];
         if (typeof longitude !== 'number') return ['Property coordinates.longitude is missing or not a number'];
         if (typeof latitude !== 'number') return ['Property coordinates.latitude is missing or not a number'];
+
+        if(!networkId) return ['Property networkId is required'];
 
         if (city) { // TODO: check if city is a valid state city
             if (typeof city !== 'string') return ['city property must be a string'];

@@ -30,6 +30,7 @@ const stationSchema = new mongoose.Schema({
     },    
     networkId: {
         type: Schema.Types.ObjectId,
+        required: [ true, 'networkId is required'],
         ref: 'Network',        
     }
 

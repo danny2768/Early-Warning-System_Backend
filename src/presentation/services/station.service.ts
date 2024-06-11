@@ -78,7 +78,7 @@ export class StationService {
         const existsStation = await StationModel.findOne({ name: createStationDto.name });
         if (existsStation) throw CustomError.badRequest('Station already exists');
         
-        if ( createStationDto.networkId ) await this.validateNetworkId(createStationDto.networkId);
+        await this.validateNetworkId(createStationDto.networkId);
 
         try {
             const station = new StationModel(createStationDto);
