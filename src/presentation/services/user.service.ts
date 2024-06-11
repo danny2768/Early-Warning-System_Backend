@@ -1,6 +1,7 @@
 import { AuthService, SharedService } from ".";
 import { CreateUserDto, CustomError, PaginationDto, UpdateUserDto, UserEntity } from "../../domain";
 import { UserModel } from "../../data";
+import { BcryptAdapter } from "../../config";
 
 
 
@@ -61,9 +62,16 @@ export class UserService {
     public async updateUser( updateUserDto: UpdateUserDto) {        
         this.sharedService.validateId(updateUserDto.id);
         try {
-            const user = await UserModel.findByIdAndUpdate({ _id: updateUserDto.id }, updateUserDto, { new: true });
-            if (!user) throw CustomError.badRequest(`No user with id ${updateUserDto.id} has been found`);
-            return UserEntity.fromObj(user);
+            let updateUser = { ...updateUserDto };
+            if (updateUserDto.password) {
+                updateUser.password = BcryptAdapter.hash(updateUserDto.password);
+            }
+            const user = await UserModel.findByIdAndUpdate({ _id: updateUser.id }, updateUser, { new: true });
+            if (!user) throw CustomError.badRequest(`No user with id ${updateUser.id} has been found`);
+            
+            const { password, ...userEntity } = UserEntity.fromObj(user);
+
+            return userEntity;
         } catch (error) {
             throw CustomError.internalServer(`${error}`);
         }
