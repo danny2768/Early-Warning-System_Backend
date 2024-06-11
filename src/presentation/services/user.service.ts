@@ -23,7 +23,10 @@ export class UserService {
                     .limit( limit )
             ]); 
 
-            const usersObj = users.map( user => UserEntity.fromObj(user) );                         
+            const usersObj = users.map(user => {
+              const { password, ...userEntity } = UserEntity.fromObj(user);
+              return userEntity;
+            });
 
             const totalPages = Math.ceil( total / limit );
             return {
@@ -49,7 +52,10 @@ export class UserService {
         try {
             const user = await UserModel.findById(id);
             if (!user) throw CustomError.badRequest(`No user with id ${id} has been found`);
-            return UserEntity.fromObj(user);
+            
+            const { password, ...userEntity } = UserEntity.fromObj(user);
+
+            return userEntity;
         } catch (error) {
             throw CustomError.internalServer(`${error}`);                        
         }
@@ -82,9 +88,12 @@ export class UserService {
         try {
             const user = await UserModel.findByIdAndDelete(id);
             if (!user) throw CustomError.badRequest(`No user with id ${id} has been found`);
+
+            const { password, ...userEntity } = UserEntity.fromObj(user);
+
             return {
                 message: `User with id ${id} has been deleted`, 
-                user: UserEntity.fromObj(user)
+                user: userEntity
             }
         } catch (error) {
             throw CustomError.internalServer(`${error}`);
