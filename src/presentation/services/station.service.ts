@@ -64,11 +64,34 @@ export class StationService {
         return StationEntity.fromObj(station);
     };
 
-    public async getStationsByNetworkId( networkId: string ) {
+    public async getStationsByNetworkId( networkId: string, paginationDto: PaginationDto ) {
+        const { page, limit } = paginationDto;
         this.validateNetworkId(networkId);
         try {
-            const stations = await StationModel.find({ networkId });
-            return stations.map(station => StationEntity.fromObj(station));
+            const [ total,  stations ] = await Promise.all([
+                StationModel.countDocuments({ networkId }),
+                StationModel.find({ networkId })
+                    .skip( (page - 1) * limit )
+                    .limit( limit )
+            ]);
+
+            const stationsObj = stations.map( station => StationEntity.fromObj(station) );
+
+            const totalPages = Math.ceil( total / limit );
+
+            return {
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    totalItems: total,
+                    totalPages: totalPages,
+                    next: (page < totalPages) ? `/api/stations/by-network/${networkId}?page=${page + 1}&limit=${limit}` : null,
+                    prev: (page - 1 > 0) ? `/api/stations/by-network/${networkId}?page=${page - 1}&limit=${limit}` : null,
+                    first: `/api/stations/by-network/${networkId}?page=1&limit=${limit}`,
+                    last: `/api/stations/by-network/${networkId}?page=${totalPages}&limit=${limit}`,
+                },
+                stations: stationsObj
+            }
         } catch (error) {
             throw CustomError.internalServer(`${error}`);                        
         }
