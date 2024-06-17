@@ -51,6 +51,7 @@ export class NetworkService {
 
             return NetworkEntity.fromObj(network);
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };
@@ -65,6 +66,7 @@ export class NetworkService {
 
             return NetworkEntity.fromObj(network);
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);            
         }
     };
@@ -81,6 +83,7 @@ export class NetworkService {
 
             return NetworkEntity.fromObj(network);            
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
         
@@ -96,6 +99,7 @@ export class NetworkService {
                 network: NetworkEntity.fromObj(network)
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };
