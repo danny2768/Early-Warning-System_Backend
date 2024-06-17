@@ -42,11 +42,17 @@ export class NetworkService {
     };
 
     public async getNetworkById( id: string ) {
-        this.sharedService.validateId(id);
-        const network = await NetworkModel.findById(id);
-        if (!network) throw CustomError.badRequest(`No network with id ${id} has been found`);
+        try {
+            this.sharedService.validateId(id);
+            const network = await NetworkModel.findById(id);
+            if (!network) {
+                throw CustomError.badRequest(`No network with id ${id} has been found`);
+            }
 
-        return NetworkEntity.fromObj(network);
+            return NetworkEntity.fromObj(network);
+        } catch (error) {
+            throw CustomError.internalServer(`${error}`);
+        }
     };
 
     public async createNetwork( createNetworkDto: CreateNetworkDto ) {
