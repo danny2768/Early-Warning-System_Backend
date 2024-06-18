@@ -14,12 +14,13 @@ export class CreateStationDto {
     ) {}
 
     public static create(object: { [key: string]: any }): [ string?, CreateStationDto? ] {
-        const { name, state, countryCode, coordinates, city, networkId } = object;
+        const { name, state, countryCode, coordinates, networkId, city } = object;
 
         if (!name) return ['Property name is required'];
         if (!state) return ['Property state is required']; // TODO: check if state is a valid state name
         
         if (!countryCode) return ['Property countryCode is required'];
+        if (typeof countryCode !== 'string') return ['Property countryCode must be a string'];        
         if (countryCode.length < 2 || countryCode.length > 3) return ['Invalid countryCode'];
         if (!CountryCodeAdapter.validateCountryCode(countryCode)) return ['Invalid countryCode'];
 
@@ -39,6 +40,6 @@ export class CreateStationDto {
             if (city.trim() === '') return ['city property must be a non-empty string'];
         };
 
-        return [undefined, new CreateStationDto( name, state, countryCode, coordinates, city, networkId )];
+        return [undefined, new CreateStationDto( name, state, countryCode.toUpperCase(), coordinates, networkId, city )];
     }
 }
