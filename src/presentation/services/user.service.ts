@@ -43,6 +43,7 @@ export class UserService {
                 users: usersObj
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);            
         }
     };
@@ -57,6 +58,7 @@ export class UserService {
 
             return userEntity;
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);                        
         }
     };
@@ -79,6 +81,7 @@ export class UserService {
 
             return userEntity;
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };
@@ -96,6 +99,7 @@ export class UserService {
                 user: userEntity
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };
