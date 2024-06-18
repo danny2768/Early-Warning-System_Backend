@@ -20,7 +20,7 @@ export class CreateStationDto {
         if (!state) return ['Property state is required']; // TODO: check if state is a valid state name
         
         if (!countryCode) return ['Property countryCode is required'];
-        if (countryCode.length > 3) return ['Invalid countryCode'];
+        if (countryCode.length < 2 || countryCode.length > 3) return ['Invalid countryCode'];
         if (!CountryCodeAdapter.validateCountryCode(countryCode)) return ['Invalid countryCode'];
 
         if (!coordinates) return ['Property coordinates is required'];
