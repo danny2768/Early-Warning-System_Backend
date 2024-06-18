@@ -52,22 +52,28 @@ export class StationService {
                 stations: stationsObj
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);                        
         }    
     };
 
     public async getStationById( id: string ) {
-        this.sharedService.validateId(id);
-        const station = await StationModel.findById(id);
-        if (!station) throw CustomError.badRequest(`No station with id ${id} has been found`);
-    
-        return StationEntity.fromObj(station);
+        try {
+            this.sharedService.validateId(id);
+            const station = await StationModel.findById(id);
+            if (!station) throw CustomError.badRequest(`No station with id ${id} has been found`);
+            
+            return StationEntity.fromObj(station);
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);
+        }    
     };
 
     public async getStationsByNetworkId( networkId: string, paginationDto: PaginationDto ) {
         const { page, limit } = paginationDto;
-        this.validateNetworkId(networkId);
         try {
+            await this.validateNetworkId(networkId);
             const [ total,  stations ] = await Promise.all([
                 StationModel.countDocuments({ networkId }),
                 StationModel.find({ networkId })
@@ -93,6 +99,7 @@ export class StationService {
                 stations: stationsObj
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);                        
         }
     }
@@ -109,6 +116,7 @@ export class StationService {
 
             return StationEntity.fromObj(station);
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);            
         }
     };
@@ -125,6 +133,7 @@ export class StationService {
 
             return StationEntity.fromObj(station);
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
 
@@ -140,6 +149,7 @@ export class StationService {
                 station: StationEntity.fromObj(station)
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };
