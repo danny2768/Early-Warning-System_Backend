@@ -23,7 +23,7 @@ export class CreateUserDto {
 
         if (role) {
             if (!Array.isArray(role)) return ['Property role must be an array'];
-            if (!role.every(r => r === 'ADMIN_ROLE' || r === 'USER_ROLE')) return ['Invalid role'];
+            if (!role.every(r => ['SUPERADMIN_ROLE', 'ADMIN_ROLE', 'USER_ROLE'].includes(r))) return ['Invalid role'];
         }
         
         return [undefined, new CreateUserDto(name, email, password, role || ['USER_ROLE'])];

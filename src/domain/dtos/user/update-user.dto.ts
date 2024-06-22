@@ -22,7 +22,7 @@ export class UpdateUserDto {
         if (password && password.length < 8) return ['Password must be at least 8 characters'];
         if (role) {
             if (!Array.isArray(role)) return ['Property role must be an array'];
-            if (!role.every(r => r === 'ADMIN_ROLE' || r === 'USER_ROLE')) return ['Invalid role'];
+            if (!role.every(r => ['SUPERADMIN_ROLE', 'ADMIN_ROLE', 'USER_ROLE'].includes(r))) return ['Invalid role'];            
         }
 
         return [undefined, new UpdateUserDto( id, name, email, password, role)];        
