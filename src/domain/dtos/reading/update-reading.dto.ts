@@ -5,12 +5,11 @@ export class UpdateReadingDto {
     private constructor(
         public readonly id: string,
         public readonly value: number,
-        public readonly sensor: string,
-        public readonly sentAt: Date,
+        public readonly sensor: string,        
     ) {}
 
     static create( object: {[ key: string ]: any }): [ string?, UpdateReadingDto? ] {
-        const { id, value, sensor, sentAt } = object;
+        const { id, value, sensor } = object;
 
         if (!id) return ['Property id is required']
         if (typeof id !== 'string') return ['id property must be a string'];
@@ -26,13 +25,6 @@ export class UpdateReadingDto {
             if (sensor.trim() === '') return ['Property sensor must be a non-empty string'];
         }
 
-        if (sentAt) {
-            let newSentAt;
-            newSentAt = new Date(sentAt);
-            if ( isNaN(newSentAt.getTime()) ) return ['Property sentAt is invalid'];
-            object.sentAt = newSentAt;
-        }
-
-        return [ undefined, new UpdateReadingDto( id, value, sensor, sentAt )];
+        return [ undefined, new UpdateReadingDto( id, value, sensor )];
     }
 }
