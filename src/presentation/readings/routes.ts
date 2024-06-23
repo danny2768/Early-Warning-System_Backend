@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { ReadingsController } from "./controller";
 import { ReadingService, SharedService } from "../services";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 
 
@@ -12,13 +13,10 @@ export class ReadingsRoutes {
         const readingService = new ReadingService( sharedService );
         const controller = new ReadingsController( readingService );
 
-        router.get("/", controller.getReadings);
-                
-        router.post("/", controller.createReading);
-        
-        router.post("/:id", controller.updateReading);
-
-        router.delete("/:id", controller.deleteReading);
+        router.get("/",       [ AuthMiddleware.validateAdminToken ], controller.getReadings);                
+        router.post("/",      [ AuthMiddleware.validateAdminToken ], controller.createReading);        
+        router.post("/:id",   [ AuthMiddleware.validateAdminToken ], controller.updateReading);
+        router.delete("/:id", [ AuthMiddleware.validateSuperAdminToken ], controller.deleteReading);
 
         return router;
     };

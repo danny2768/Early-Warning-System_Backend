@@ -4,6 +4,7 @@ import { SharedService, UserService } from "../services";
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
 import { envs } from "../../config";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 
 export class UsersRoutes {
@@ -21,14 +22,11 @@ export class UsersRoutes {
         const userService = new UserService(sharedService, authService);
         const controller = new UsersController( userService );
 
-        router.get("/", controller.getUsers);
-        router.get("/:id", controller.getUserById);
-
-        router.post("/", controller.createUser);
-
-        router.put("/:id", controller.updateUser); // It should be a PATCH request
-
-        router.delete("/:id", controller.deleteUser);
+        router.get("/",       [ AuthMiddleware.validateAdminToken ], controller.getUsers);
+        router.get("/:id",    [ AuthMiddleware.validateAdminToken ], controller.getUserById);
+        router.post("/",      [ AuthMiddleware.validateAdminToken ], controller.createUser);
+        router.put("/:id",    [ AuthMiddleware.validateAdminToken ], controller.updateUser); 
+        router.delete("/:id", [ AuthMiddleware.validateSuperAdminToken ], controller.deleteUser);
         
         return router;
     }

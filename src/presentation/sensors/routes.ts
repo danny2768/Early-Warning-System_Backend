@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { SensorsController } from "./controller";
 import { SensorService, SharedService } from "../services";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 
 export class SensorsRoutes {
@@ -11,16 +12,14 @@ export class SensorsRoutes {
         const sensorService = new SensorService(sharedService);
         const controller = new SensorsController(sensorService);
 
-        router.get("/", controller.getSensors);
-        router.get("/by-station/:id", controller.getSensorByStationId);
-        router.get("/:id/readings", controller.getSensorReadings);
-        router.get("/:id", controller.getSensorById);
-
-        router.post("/", controller.createSensor);
-
-        router.put("/:id", controller.updateSensor);
-
-        router.delete("/:id", controller.deleteSensor);
+        router.get("/",               [ AuthMiddleware.validateAdminToken ], controller.getSensors);
+        router.get("/by-station/:id", [ AuthMiddleware.validateAdminToken ], controller.getSensorByStationId);
+        router.get("/:id/readings",   [ AuthMiddleware.validateAdminToken ], controller.getSensorReadings);
+        router.get("/:id",            [ AuthMiddleware.validateAdminToken ], controller.getSensorById);
+        router.post("/",              [ AuthMiddleware.validateAdminToken ], controller.createSensor);
+        router.put("/:id",            [ AuthMiddleware.validateAdminToken ], controller.updateSensor);
+        router.delete("/:id",         [ AuthMiddleware.validateSuperAdminToken ], controller.deleteSensor);
+        
         return router;
     };
 }

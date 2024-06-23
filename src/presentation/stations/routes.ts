@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { SharedService, StationService } from "../services";
 import { StationsController } from "./controller";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 export class StationsRoutes {
     
@@ -10,15 +11,12 @@ export class StationsRoutes {
         const stationService = new StationService(sharedService);
         const controller = new StationsController(stationService);
 
-        router.get("/", controller.getStations);
-        router.get("/by-network/:id", controller.getStationsByNetworkId);
-        router.get("/:id", controller.getStationById);
-
-        router.post("/", controller.createStation);
-
-        router.put("/:id", controller.updateStation);
-
-        router.delete("/:id", controller.deleteStation);
+        router.get("/",               [ AuthMiddleware.validateAdminToken ], controller.getStations);
+        router.get("/by-network/:id", [ AuthMiddleware.validateAdminToken ], controller.getStationsByNetworkId);
+        router.get("/:id",            [ AuthMiddleware.validateAdminToken ], controller.getStationById);
+        router.post("/",              [ AuthMiddleware.validateAdminToken ], controller.createStation);
+        router.put("/:id",            [ AuthMiddleware.validateAdminToken ], controller.updateStation);
+        router.delete("/:id",         [ AuthMiddleware.validateSuperAdminToken ], controller.deleteStation);
         
         return router;
     }
