@@ -57,6 +57,39 @@ export class StationService {
         }    
     };
 
+    public async getStationsVisibleToUser( paginationDto: PaginationDto ) {
+        const { page, limit } = paginationDto;
+        try {
+            const [ total, stations ] = await Promise.all([
+                StationModel.countDocuments({ isVisibleToUser: true }),
+                StationModel.find({ isVisibleToUser: true })
+                    .skip( (page - 1) * limit )
+                    .limit( limit )
+            ]);
+
+            const stationsObj = stations.map( station => StationEntity.fromObj(station) );
+
+            const totalPages = Math.ceil( total / limit );
+
+            return {
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    totalItems: total,
+                    totalPages: totalPages,
+                    next: (page < totalPages) ? `/api/stations/userVisible?page=${page + 1}&limit=${limit}` : null,
+                    prev: (page - 1 > 0) ? `/api/stations/userVisible?page=${page - 1}&limit=${limit}` : null,
+                    first: `/api/stations/userVisible?page=1&limit=${limit}`,
+                    last: `/api/stations/userVisible?page=${totalPages}&limit=${limit}`,
+                },
+                stations: stationsObj
+            }
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);                        
+        }
+    }
+
     public async getStationById( id: string ) {
         try {
             this.sharedService.validateId(id);

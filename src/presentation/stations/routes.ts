@@ -12,6 +12,7 @@ export class StationsRoutes {
         const controller = new StationsController(stationService);
 
         router.get("/",               [ AuthMiddleware.validateAdminToken ], controller.getStations);
+        router.get("/userVisible",    [ AuthMiddleware.validateUserToken ], controller.getStationsVisibleToUser)
         router.get("/by-network/:id", [ AuthMiddleware.validateAdminToken ], controller.getStationsByNetworkId);
         router.get("/:id",            [ AuthMiddleware.validateAdminToken ], controller.getStationById);
         router.post("/",              [ AuthMiddleware.validateAdminToken ], controller.createStation);

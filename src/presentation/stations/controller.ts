@@ -27,6 +27,16 @@ export class StationsController {
             .catch( error => this.handleError(error, res) );
     };
 
+    public getStationsVisibleToUser = ( req: Request, res: Response ) => {
+        const { page = 1, limit = 10 } = req.query;
+        const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+        if (error) return res.status(400).json({error});
+        
+        this.stationService.getStationsVisibleToUser( paginationDto! )
+            .then( stations => res.json(stations) )
+            .catch( error => this.handleError(error, res) );
+    };
+
     public getStationById = ( req: Request, res: Response ) => {
         this.stationService.getStationById(req.params.id)
             .then( station => res.json(station) )
