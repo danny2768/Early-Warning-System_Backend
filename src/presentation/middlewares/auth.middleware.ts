@@ -37,14 +37,10 @@ export class AuthMiddleware {
     }
 
     static async validateAdminToken(req: Request, res: Response, next: NextFunction) {
-        await AuthMiddleware.validateTokenWithRole(req, res, next, ['ADMIN_ROLE']);
+        await AuthMiddleware.validateTokenWithRole(req, res, next, ['ADMIN_ROLE', 'SUPER_ADMIN_ROLE']);
     }
 
     static async validateUserToken(req: Request, res: Response, next: NextFunction) {
         await AuthMiddleware.validateTokenWithRole(req, res, next, ['USER_ROLE']);
-    }
-
-    static async validateToken(req: Request, res: Response, next: NextFunction) {
-        await AuthMiddleware.validateTokenWithRole(req, res, next, ['ADMIN_ROLE', 'USER_ROLE']);
-    }
+    }    
 }
