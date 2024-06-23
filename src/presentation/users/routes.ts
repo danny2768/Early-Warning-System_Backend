@@ -23,9 +23,9 @@ export class UsersRoutes {
         const controller = new UsersController( userService );
 
         router.get("/",       [ AuthMiddleware.validateAdminToken ], controller.getUsers);
-        router.get("/:id",    [ AuthMiddleware.validateAdminToken ], controller.getUserById);
+        router.get("/:id",    [ AuthMiddleware.validateSelfOrAdminToken ], controller.getUserById);
         router.post("/",      [ AuthMiddleware.validateAdminToken ], controller.createUser);
-        router.put("/:id",    [ AuthMiddleware.validateAdminToken ], controller.updateUser); 
+        router.put("/:id",    [ AuthMiddleware.validateSelfOrAdminToken ], controller.updateUser); 
         router.delete("/:id", [ AuthMiddleware.validateSuperAdminToken ], controller.deleteUser);
         
         return router;

@@ -67,10 +67,21 @@ export class UserService {
         return this.authService.registerUser(createUserDto);
     };
 
-    public async updateUser( updateUserDto: UpdateUserDto) {        
+    public async updateUser( updateUserDto: UpdateUserDto, currentUserRole: string ) {        
         this.sharedService.validateId(updateUserDto.id);
         try {
             let updateUser = { ...updateUserDto };
+                        
+            // Prevent non-admins from changing roles
+            if (currentUserRole.includes('USER_ROLE') && !currentUserRole.includes('ADMIN_ROLE') && !currentUserRole.includes('SUPER_ADMIN_ROLE') && updateUserDto.role) {
+                throw CustomError.forbidden("You are not authorized to change roles.");
+            }
+        
+            // Prevent admins from assigning SUPER_ADMIN_ROLE
+            if (currentUserRole.includes('ADMIN_ROLE') && !currentUserRole.includes('SUPER_ADMIN_ROLE') && updateUserDto.role && updateUserDto.role.includes('SUPER_ADMIN_ROLE') ) {
+                throw CustomError.forbidden("You are not authorized to assign Super Admin role.");
+            }
+
             if (updateUserDto.password) {
                 updateUser.password = BcryptAdapter.hash(updateUserDto.password);
             }

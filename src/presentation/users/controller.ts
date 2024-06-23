@@ -48,7 +48,9 @@ export class UsersController {
         const [error, updateUserDto] = UpdateUserDto.create({ ...req.body, id});
         if (error) return res.status(400).json({error});
 
-        this.userService.updateUser( updateUserDto! )
+        const currentUserRole = req.body.user.role;
+
+        this.userService.updateUser( updateUserDto!, currentUserRole )
             .then( user => res.json(user) )
             .catch(error => this.handleError(error, res));
     };
