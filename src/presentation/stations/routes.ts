@@ -85,7 +85,7 @@ export class StationsRoutes {
  *     tags: [Stations]
  *     requestBody:
  *       required: true
- *       description: The properties city & networkId are optional
+ *       description: The property city is optional
  *       content:
  *         application/json:
  *           schema:
