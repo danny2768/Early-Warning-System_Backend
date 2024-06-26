@@ -100,6 +100,10 @@ export class UserService {
     public async deleteUser( id: string ) {
         this.sharedService.validateId(id);
         try {
+            // Delete all subscriptions for the user before deleting the user
+            await this.sharedService.deleteSubscriptionsForUser(id);
+
+            // Delete the user
             const user = await UserModel.findByIdAndDelete(id);
             if (!user) throw CustomError.badRequest(`No user with id ${id} has been found`);
 

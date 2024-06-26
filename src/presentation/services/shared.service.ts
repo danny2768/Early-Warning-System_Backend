@@ -76,4 +76,8 @@ export class SharedService {
             { $pull: { stationIds: stationId } } // Pull (remove) the stationId from the stationIds array
         );
     }
+
+    public async deleteSubscriptionsForUser(userId: string): Promise<void> {
+        await SubscriptionModel.deleteMany({ userId: userId });
+    }
 }
