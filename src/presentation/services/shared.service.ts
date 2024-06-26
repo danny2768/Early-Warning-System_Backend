@@ -1,4 +1,4 @@
-import { NetworkModel, StationModel, SensorModel, UserModel } from "../../data";
+import { NetworkModel, StationModel, SensorModel, UserModel, ReadingModel } from "../../data";
 import { CustomError, NetworkEntity, SensorEntity, StationEntity } from "../../domain";
 
 
@@ -62,6 +62,11 @@ export class SharedService {
         if (associatedSensorsCount > 0) {
             throw CustomError.badRequest(`Cannot delete station with id ${stationId} because it is referenced by one or more sensors.`);
         }
+        return true;
+    }
+
+    public async deleteReadingsBySensorId(sensorId: string): Promise<boolean> {
+        await ReadingModel.deleteMany({ sensor: sensorId });
         return true;
     }
 

@@ -139,9 +139,12 @@ export class SensorService {
     };
 
     public async deleteSensor( id: string ) {
+        this.sharedService.validateId(id);
         try {
-            this.sharedService.validateId(id);
+            // Delete readings associated with the sensor
+            await this.sharedService.deleteReadingsBySensorId(id);
             
+            // Delete the sensor
             const sensor = await SensorModel.findByIdAndDelete(id);
             if (!sensor) throw CustomError.badRequest(`No sensor with id ${id} has been found`);
             return {
