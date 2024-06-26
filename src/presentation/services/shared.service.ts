@@ -57,4 +57,12 @@ export class SharedService {
         return true;
     }
 
+    public async validateNoSensorAssociatedWithStation(stationId: string): Promise<boolean> {
+        const associatedSensorsCount = await SensorModel.countDocuments({ stationId: stationId });
+        if (associatedSensorsCount > 0) {
+            throw CustomError.badRequest(`Cannot delete station with id ${stationId} because it is referenced by one or more sensors.`);
+        }
+        return true;
+    }
+
 }
