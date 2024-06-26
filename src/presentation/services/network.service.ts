@@ -92,6 +92,10 @@ export class NetworkService {
     public async deleteNetwork( id: string ) {
         this.sharedService.validateId(id);
         try {
+            // Check if any station is associated with this network
+            await this.sharedService.validateNoStationAssociatedWithNetwork(id);
+
+            // Proceed with network deletion if no associated stations are found
             const network = await NetworkModel.findByIdAndDelete(id);
             if (!network) throw CustomError.badRequest(`No network with id ${id} has been found`);
             return {

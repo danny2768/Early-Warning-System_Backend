@@ -49,4 +49,12 @@ export class SharedService {
         return true;
     }
 
+    public async validateNoStationAssociatedWithNetwork(networkId: string): Promise<boolean> {
+        const associatedStationsCount = await StationModel.countDocuments({ networkId: networkId });
+        if (associatedStationsCount > 0) {
+            throw CustomError.badRequest(`Cannot delete network with id ${networkId} because it is referenced by one or more stations.`);
+        }
+        return true;
+    }
+
 }
