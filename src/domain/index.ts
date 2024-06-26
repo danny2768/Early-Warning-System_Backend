@@ -9,6 +9,7 @@ export * from './entities/reading.entity'
 export * from './entities/sensor.entity'
 export * from './entities/station.entity'
 export * from './entities/network.entity'
+export * from './entities/subscription.entity'
 
 // DTOS
 export * from './dtos/auth/register-user.dto'
@@ -28,6 +29,9 @@ export * from './dtos/station/update-station.dto'
 
 export * from './dtos/network/create-network.dto'
 export * from './dtos/network/update-network.dto'
+
+export * from './dtos/subscription/create-subscription.dto'
+export * from './dtos/subscription/update-subscription.dto'
 
 export * from './dtos/shared/pagination.dto'
 

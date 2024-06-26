@@ -1,4 +1,4 @@
-import { NetworkModel, StationModel, SensorModel } from "../../data";
+import { NetworkModel, StationModel, SensorModel, UserModel } from "../../data";
 import { CustomError, NetworkEntity, SensorEntity, StationEntity } from "../../domain";
 
 
@@ -41,5 +41,12 @@ export class SharedService {
 
         return true;
     };
+
+    public async validateUserById( id: string ): Promise<boolean> {
+        const user = await UserModel.exists({ _id: id });
+        if (!user) throw CustomError.badRequest(`No user with id ${id} has been found`);
+        
+        return true;
+    }
 
 }
