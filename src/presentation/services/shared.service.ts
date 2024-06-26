@@ -1,4 +1,4 @@
-import { NetworkModel, StationModel, SensorModel, UserModel, ReadingModel } from "../../data";
+import { NetworkModel, StationModel, SensorModel, UserModel, ReadingModel, SubscriptionModel } from "../../data";
 import { CustomError, NetworkEntity, SensorEntity, StationEntity } from "../../domain";
 
 
@@ -70,4 +70,10 @@ export class SharedService {
         return true;
     }
 
+    public async removeStationFromSubscriptions(stationId: string): Promise<void> {
+        await SubscriptionModel.updateMany(
+            {}, // Filter for all documents
+            { $pull: { stationIds: stationId } } // Pull (remove) the stationId from the stationIds array
+        );
+    }
 }

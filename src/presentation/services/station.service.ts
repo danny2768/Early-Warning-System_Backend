@@ -178,6 +178,9 @@ export class StationService {
             // Check if any sensor is associated with this station
             await this.sharedService.validateNoSensorAssociatedWithStation(id);
 
+            // Remove the station from all subscriptions before deletion
+            await this.sharedService.removeStationFromSubscriptions(id);
+
             // Proceed with station deletion if no sensor is associated
             const station = await StationModel.findByIdAndDelete(id);
             if (!station) throw CustomError.badRequest(`No station with id ${id} has been found`);
