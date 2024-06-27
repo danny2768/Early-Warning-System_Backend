@@ -128,6 +128,8 @@ export class SensorsRoutes {
  *                     type: number
  *                   red:
  *                     type: number
+ *               sendAlerts:
+ *                 type: boolean
  *     responses:
  *       "200":
  *         description: A user schema
@@ -174,6 +176,8 @@ export class SensorsRoutes {
  *                     type: number
  *                   red:
  *                     type: number
+ *               sendAlerts:
+ *                 type: boolean
  *     responses:
  *       "200":
  *         description: Sensor updated successfully

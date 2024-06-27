@@ -16,7 +16,7 @@ const sensorSchema = new mongoose.Schema({
         red: Number,
         _id: false,
     },
-    sendingInterval: {  // Add required if necessary
+    sendingInterval: {
         type: Number,
         required: [ true, 'sendingInterval is required'],
     },
@@ -24,8 +24,11 @@ const sensorSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Station',
         required: [ true, 'stationId is required'],
-    }
-
+    },
+    sendAlerts: {
+        type: Boolean,
+        default: true,  // By default, alerts are enabled
+    },
 }, {    
     timestamps: true,
 });
