@@ -24,11 +24,6 @@ export class SubscriptionService {
         await this.sharedService.validateUserById(userId); // DB validation existance
     }
 
-    // private async validateStationId( stationId: string ) {
-    //     this.sharedService.validateId(stationId, `Invalid station id: ${stationId}`); // Regex validation
-    //     await this.sharedService.validateStationById(stationId); // DB validation existance
-    // }
-
     public async getSubscriptions( paginationDto: PaginationDto ) {
         const { page, limit } = paginationDto;
         try {
@@ -65,7 +60,7 @@ export class SubscriptionService {
     public async getSubscriptionByUserId( userId: string ) {
         try {
             await this.validateUserId(userId);
-            const subscription = await SubscriptionModel.find({ userId });
+            const subscription = await SubscriptionModel.findOne({ userId });            
             if (!subscription) throw CustomError.notFound(`No subscription found for userId: ${userId}`);
 
             return SubscriptionEntity.fromObj(subscription);
