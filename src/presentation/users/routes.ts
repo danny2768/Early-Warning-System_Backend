@@ -26,7 +26,7 @@ export class UsersRoutes {
         router.get("/:id",    [ AuthMiddleware.validateSelfOrAdminToken ], controller.getUserById);
         router.post("/",      [ AuthMiddleware.validateAdminToken ], controller.createUser);
         router.put("/:id",    [ AuthMiddleware.validateSelfOrAdminToken ], controller.updateUser); 
-        router.delete("/:id", [ AuthMiddleware.validateSuperAdminToken ], controller.deleteUser);
+        router.delete("/:id", [ AuthMiddleware.validateSelfOrSuperAdminToken ], controller.deleteUser);
         
         return router;
     }

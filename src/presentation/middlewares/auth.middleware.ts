@@ -56,6 +56,23 @@ export class AuthMiddleware {
         }
     }
 
+    static async validateSelfOrSuperAdminToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = await AuthMiddleware.extractAndValidateToken(req);
+            if (req.params.id === user.id || user.role.includes('SUPER_ADMIN_ROLE')) {
+                req.body.user = UserEntity.fromObj(user);
+                next();
+            } else {
+                throw { status: 403, message: 'Forbidden. You dont have permission to access this resource' };
+            }
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message || 'Internal server error' });
+            if (error.status === 500 || !error.status) {
+                console.log(error);
+            }
+        }
+    }
+
     static async validateSuperAdminToken(req: Request, res: Response, next: NextFunction) {
         await AuthMiddleware.validateTokenWithRole(req, res, next, ['SUPER_ADMIN_ROLE']);
     }
