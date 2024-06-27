@@ -127,6 +127,7 @@ export class SubscriptionsRoutes {
  *         description: subscription id
  *     requestBody:
  *       required: true
+ *       description: All properties are optional, except for the id.
  *       content:
  *         application/json:
  *           schema:
