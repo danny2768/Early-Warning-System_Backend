@@ -108,6 +108,8 @@ export class StationsRoutes {
  *                 type: string
  *               networkId:
  *                 type: string
+ *               isVisibleToUser:
+ *                 type: boolean
  *     responses:
  *       "200":
  *         description: A station schema
@@ -130,6 +132,7 @@ export class StationsRoutes {
  *         description: station id
  *     requestBody:
  *       required: true
+ *       description: All properties are optional, except for the id.
  *       content:
  *         application/json:
  *           schema:
@@ -152,6 +155,8 @@ export class StationsRoutes {
  *                 type: string
  *               networkId:
  *                 type: string
+ *               isVisibleToUser:
+ *                 type: boolean
  *     responses:
  *       "200":
  *         description: Station updated successfully
