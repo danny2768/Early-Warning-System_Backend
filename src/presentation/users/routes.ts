@@ -76,6 +76,7 @@ export class UsersRoutes {
  *     tags: [Users]
  *     requestBody:
  *       required: true
+ *       description: Phone property is optional
  *       content:
  *         application/json:
  *           schema:
@@ -90,6 +91,14 @@ export class UsersRoutes {
  *               role:
  *                 type: string
  *                 enum: ['USER_ROLE', 'ADMIN_ROLE']
+ *               phone:
+ *                 type: object
+ *                 properties:
+ *                   countryCode:
+ *                     type: string
+ *                   number:
+ *                     type: string
+ * 
  *     responses:
  *       "200":
  *         description: A user schema
@@ -127,6 +136,13 @@ export class UsersRoutes {
  *               role:
  *                 type: string
  *                 enum: ['USER_ROLE', 'ADMIN_ROLE']
+ *               phone:
+ *                 type: object
+ *                 properties:
+ *                   countryCode:
+ *                     type: string
+ *                   number:
+ *                     type: string
  *     responses:
  *       "200":
  *         description: User updated successfully

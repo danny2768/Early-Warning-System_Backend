@@ -22,7 +22,17 @@ const userSchema = new mongoose.Schema({
         type: [String],
         default: ['USER_ROLE'],
         enum: ['SUPER_ADMIN_ROLE','ADMIN_ROLE', 'USER_ROLE'],
-    },    
+    },
+    phone: {
+        countryCode: {
+            type: String,
+            match: [/^\+\d{1,3}$/, 'Please fill a valid country code'], // Matches + followed by 1 to 3 digits
+        },
+        number: {
+            type: String,
+            match: [/^\\d{7,15}$/, 'Please fill a valid phone number'] // Matches 7 to 15 digits
+        },
+    },
 }, {    
     timestamps: true,
 });
