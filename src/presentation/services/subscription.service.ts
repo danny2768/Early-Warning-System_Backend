@@ -1,5 +1,5 @@
 import { SubscriptionModel } from "../../data/mongo/models/subscription.model";
-import { CreateSubscriptionDto, CustomError, PaginationDto, SubscriptionEntity } from "../../domain";
+import { CreateSubscriptionDto, CustomError, PaginationDto, SubscriptionEntity, UserEntity } from "../../domain";
 import { SharedService } from "./shared.service";
 import { UpdateSubscriptionDto } from '../../domain/dtos/subscription/update-subscription.dto';
 
@@ -83,8 +83,16 @@ export class SubscriptionService {
         }
     };    
 
-    public async createSubscription( createSubscriptionDto: CreateSubscriptionDto) {        
-        try {
+    public async createSubscription( createSubscriptionDto: CreateSubscriptionDto, currentUser: UserEntity ) {                
+        try {            
+            // Check if the user is an admin
+            const isAdmin = currentUser.role.includes('SUPER_ADMIN_ROLE') || currentUser.role.includes('ADMIN_ROLE');
+
+            // If the user is not an admin and the userId in the DTO does not match the currentUser's id, throw an error
+            if (!isAdmin && createSubscriptionDto.userId !== currentUser.id) {
+                throw CustomError.forbidden('You are not allowed to create a subscription for another user');
+            }
+
             await this.validateUserId(createSubscriptionDto.userId);
 
             const existsSubscription = await SubscriptionModel.findOne({ userId: createSubscriptionDto.userId });
@@ -105,9 +113,28 @@ export class SubscriptionService {
         }
     };
 
-    public async updateSubscription( updateSubscriptionDto: UpdateSubscriptionDto) {
+    public async updateSubscription( updateSubscriptionDto: UpdateSubscriptionDto, currentUser: UserEntity ) {
         const { id, ...updateOptions } = updateSubscriptionDto;
-        try {            
+        try {     
+            // Check if the user is an admin
+            const isAdmin = currentUser.role.includes('SUPER_ADMIN_ROLE') || currentUser.role.includes('ADMIN_ROLE');
+
+            if (!isAdmin) {
+                // Fetch the subscription to check ownership for non-admin users
+                const checkSubscription = await SubscriptionModel.findById(id);
+                if (!checkSubscription) throw CustomError.badRequest(`No subscription with id ${id} has been found`);
+    
+                // If the user is not an admin and tries to update a subscription not belonging to them, throw an error
+                if (checkSubscription.userId.toString() !== currentUser.id) {
+                    throw CustomError.forbidden('You are not allowed to update a subscription that does not belong to you');
+                }
+                                
+                // If the user is not an admin and tries to update the userId to another one, throw an error
+                if (updateOptions.userId && updateOptions.userId !== currentUser.id) {
+                    throw CustomError.forbidden('You are not allowed to update a subscription for another user');
+                }
+            }
+            
             this.sharedService.validateId(id);
             if ( updateOptions.userId ) await this.validateUserId(updateOptions.userId);
             if ( updateOptions.stationIds ) await this.validateStationIds(updateOptions.stationIds);
@@ -122,9 +149,21 @@ export class SubscriptionService {
         }
     };
 
-    public async deleteSubscription( id: string ) {
+    public async deleteSubscription( id: string, currentUser: UserEntity ) {
         this.sharedService.validateId(id);
         try {
+            // Check if the user is a super admin
+            const isSuperAdmin = currentUser.role.includes('SUPER_ADMIN_ROLE')
+
+            if (!isSuperAdmin) {
+                // Fetch the subscription to check ownership for non-super-admin users
+                const checkSubscription = await SubscriptionModel.findById(id);
+                if (!checkSubscription) throw CustomError.badRequest(`No subscription with id ${id} has been found`);
+
+                // If the user is not a super admin and tries to delete a subscription not belonging to them, throw an error
+                if (checkSubscription.userId.toString() !== currentUser.id) throw CustomError.forbidden('You are not allowed to delete a subscription that does not belong to you');
+            }
+
             const subscription = await SubscriptionModel.findByIdAndDelete(id);
             if (!subscription) throw CustomError.badRequest(`No subscription with id ${id} has been found`);
             return {

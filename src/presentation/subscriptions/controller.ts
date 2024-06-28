@@ -42,7 +42,9 @@ export class SubscriptionsController {
         const [error, createSubscriptionDto] = CreateSubscriptionDto.create(req.body);
         if (error) return res.status(400).json({error});
 
-        this.subscriptionService.createSubscription( createSubscriptionDto! )
+        const currentUser = req.body.user;
+
+        this.subscriptionService.createSubscription( createSubscriptionDto!, currentUser )
             .then( subscription => res.json(subscription) )
             .catch( error => this.handleError(error, res) );
     };
@@ -52,13 +54,17 @@ export class SubscriptionsController {
         const [error, updateSubscriptionDto] = UpdateSubscriptionDto.create({ ...req.body, id });
         if (error) return res.status(400).json({error});
 
-        this.subscriptionService.updateSubscription( updateSubscriptionDto! )
+        const currentUser = req.body.user;
+
+        this.subscriptionService.updateSubscription( updateSubscriptionDto!, currentUser )
             .then( subscription => res.json(subscription) )
             .catch( error => this.handleError(error, res) );
     };
 
     public deleteSubscription = ( req: Request, res: Response ) => {
-        this.subscriptionService.deleteSubscription(req.params.id)
+        const currentUser = req.body.user;
+
+        this.subscriptionService.deleteSubscription( req.params.id, currentUser)
             .then( subscription => res.json(subscription) )
             .catch( error => this.handleError(error, res) );
     };

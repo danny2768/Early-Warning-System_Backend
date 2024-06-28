@@ -14,11 +14,13 @@ export class SubscriptionsRoutes {
         const controller = new SubscriptionsController(subscriptionService);
 
         router.get("/",            [ AuthMiddleware.validateAdminToken ], controller.getSubscriptions);
-        router.get("/by-user/:id", [ AuthMiddleware.validateAdminToken ], controller.getSubscriptionByUserId);
+        router.get("/by-user/:id", [ AuthMiddleware.validateSelfOrAdminToken ], controller.getSubscriptionByUserId);
         router.get("/:id",         [ AuthMiddleware.validateAdminToken ], controller.getSubscriptionById);
-        router.post("/",           [ AuthMiddleware.validateAdminToken ], controller.createSubscription);
-        router.put("/:id",         [ AuthMiddleware.validateAdminToken ], controller.updateSubscription);
-        router.delete("/:id",      [ AuthMiddleware.validateSuperAdminToken ], controller.deleteSubscription);
+        router.post("/",           [ AuthMiddleware.validateUserToken ], controller.createSubscription); 
+        router.put("/:id",         [ AuthMiddleware.validateUserToken ], controller.updateSubscription);
+        router.delete("/:id",      [ AuthMiddleware.validateUserToken ], controller.deleteSubscription);
+
+        // Extra validations are being made in the service for the create, update and delete methods.
 
         return router;
     }
