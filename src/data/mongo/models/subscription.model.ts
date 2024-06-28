@@ -12,7 +12,7 @@ const subscriptionSchema = new mongoose.Schema({
         ref: 'Station',
     }],
     contactMethods: {
-        email: { type: Boolean, default: true },
+        email: { type: Boolean, default: false },
         whatsapp: { type: Boolean, default: false },
     },
 }, {
