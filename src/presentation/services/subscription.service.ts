@@ -95,13 +95,23 @@ export class SubscriptionService {
 
             await this.validateUserId(createSubscriptionDto.userId);
 
+            // Fetch the user details for whom the subscription is being created
+            const userForSubscription = isAdmin ? await this.sharedService.getUserById(createSubscriptionDto.userId) : currentUser;
+            
+            // Validate email contact method
+            if (createSubscriptionDto.contactMethods.email && !userForSubscription.emailValidated) {
+                throw CustomError.badRequest('Email must be validated before activating email notifications');
+            }
+        
+            // Validate WhatsApp contact method
+            if (createSubscriptionDto.contactMethods.whatsapp && (!userForSubscription.phone || !userForSubscription.phone.number || !userForSubscription.phone.countryCode)) {
+                throw CustomError.badRequest('A phone number must be added to your account to activate WhatsApp notifications');
+            }            
+
             const existsSubscription = await SubscriptionModel.findOne({ userId: createSubscriptionDto.userId });
             if (existsSubscription) throw CustomError.badRequest('Subscription already exists for this user');
 
             await this.validateStationIds(createSubscriptionDto.stationIds);
-            // for (const stationId of createSubscriptionDto.stationIds) {
-            //     await this.validateStationId(stationId);
-            // }
 
             const subscription = new SubscriptionModel(createSubscriptionDto);
             await subscription.save();
@@ -118,26 +128,33 @@ export class SubscriptionService {
         try {     
             // Check if the user is an admin
             const isAdmin = currentUser.role.includes('SUPER_ADMIN_ROLE') || currentUser.role.includes('ADMIN_ROLE');
-
-            if (!isAdmin) {
-                // Fetch the subscription to check ownership for non-admin users
-                const checkSubscription = await SubscriptionModel.findById(id);
-                if (!checkSubscription) throw CustomError.badRequest(`No subscription with id ${id} has been found`);
-    
-                // If the user is not an admin and tries to update a subscription not belonging to them, throw an error
-                if (checkSubscription.userId.toString() !== currentUser.id) {
-                    throw CustomError.forbidden('You are not allowed to update a subscription that does not belong to you');
-                }
-                                
-                // If the user is not an admin and tries to update the userId to another one, throw an error
-                if (updateOptions.userId && updateOptions.userId !== currentUser.id) {
-                    throw CustomError.forbidden('You are not allowed to update a subscription for another user');
-                }
-            }
             
             this.sharedService.validateId(id);
-            if ( updateOptions.userId ) await this.validateUserId(updateOptions.userId);
+
+            // Fetch the current subscription to check ownership for non-admin users 
+            const checkSubscription = await SubscriptionModel.findById(id);
+            if (!checkSubscription) throw CustomError.badRequest(`No subscription with id ${id} has been found`);            
+            
+            if (!isAdmin && checkSubscription.userId.toString() !== currentUser.id) {
+                throw CustomError.forbidden('You are not allowed to update a subscription that does not belong to you');
+            }
+                                    
             if ( updateOptions.stationIds ) await this.validateStationIds(updateOptions.stationIds);
+
+            if ( updateOptions.contactMethods) {                
+                // Fetch the user details for whom the subscription is being updated
+                const userForSubscription = await this.sharedService.getUserById( checkSubscription.userId.toString() );
+
+                // Validate email contact method
+                if (updateOptions.contactMethods.email && !userForSubscription.emailValidated) {
+                    throw CustomError.badRequest('Email must be validated before activating email notifications');
+                }
+            
+                // Validate WhatsApp contact method
+                if (updateOptions.contactMethods.whatsapp && (!userForSubscription.phone || !userForSubscription.phone.number || !userForSubscription.phone.countryCode)) {
+                    throw CustomError.badRequest('A phone number must be added to your account to activate WhatsApp notifications');
+                }
+            }
 
             const subscription = await SubscriptionModel.findByIdAndUpdate({ _id: id }, updateOptions, { new: true });
             if (!subscription) throw CustomError.badRequest(`No subscription with id ${id} has been found`);

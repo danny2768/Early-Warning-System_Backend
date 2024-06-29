@@ -134,9 +134,7 @@ export class SubscriptionsRoutes {
  *         application/json:
  *           schema:
  *             type: object
- *             properties:
- *               userId:
- *                 type: string
+ *             properties: 
  *               stationIds:
  *                 type: string[]
  *               contactMethods:

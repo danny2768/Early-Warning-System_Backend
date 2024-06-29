@@ -1,5 +1,5 @@
 import { NetworkModel, StationModel, SensorModel, UserModel, ReadingModel, SubscriptionModel } from "../../data";
-import { CustomError, NetworkEntity, SensorEntity, StationEntity } from "../../domain";
+import { CustomError, NetworkEntity, SensorEntity, StationEntity, UserEntity } from "../../domain";
 
 
 export class SharedService {
@@ -79,5 +79,21 @@ export class SharedService {
 
     public async deleteSubscriptionsForUser(userId: string): Promise<void> {
         await SubscriptionModel.deleteMany({ userId: userId });
+    }
+
+    public async getUserById(id: string) {
+        this.validateId(id);
+        try {
+            const user = await UserModel.findById(id);
+            if (!user) throw CustomError.badRequest(`No user with id ${id} has been found`);
+            
+            const { password, ...userEntity } = UserEntity.fromObj(user);
+
+            return userEntity;
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);                        
+        }
+
     }
 }
