@@ -43,6 +43,7 @@ export class UserService {
                 users: usersObj
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);            
         }
     };
@@ -57,6 +58,7 @@ export class UserService {
 
             return userEntity;
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);                        
         }
     };
@@ -65,10 +67,21 @@ export class UserService {
         return this.authService.registerUser(createUserDto);
     };
 
-    public async updateUser( updateUserDto: UpdateUserDto) {        
+    public async updateUser( updateUserDto: UpdateUserDto, currentUserRole: string ) {        
         this.sharedService.validateId(updateUserDto.id);
         try {
             let updateUser = { ...updateUserDto };
+                        
+            // Prevent non-admins from changing roles
+            if (currentUserRole.includes('USER_ROLE') && !currentUserRole.includes('ADMIN_ROLE') && !currentUserRole.includes('SUPER_ADMIN_ROLE') && updateUserDto.role) {
+                throw CustomError.forbidden("You are not authorized to change roles.");
+            }
+        
+            // Prevent admins from assigning SUPER_ADMIN_ROLE
+            if (currentUserRole.includes('ADMIN_ROLE') && !currentUserRole.includes('SUPER_ADMIN_ROLE') && updateUserDto.role && updateUserDto.role.includes('SUPER_ADMIN_ROLE') ) {
+                throw CustomError.forbidden("You are not authorized to assign Super Admin role.");
+            }
+
             if (updateUserDto.password) {
                 updateUser.password = BcryptAdapter.hash(updateUserDto.password);
             }
@@ -79,6 +92,7 @@ export class UserService {
 
             return userEntity;
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };
@@ -86,6 +100,10 @@ export class UserService {
     public async deleteUser( id: string ) {
         this.sharedService.validateId(id);
         try {
+            // Delete all subscriptions for the user before deleting the user
+            await this.sharedService.deleteSubscriptionsForUser(id);
+
+            // Delete the user
             const user = await UserModel.findByIdAndDelete(id);
             if (!user) throw CustomError.badRequest(`No user with id ${id} has been found`);
 
@@ -96,6 +114,7 @@ export class UserService {
                 user: userEntity
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };

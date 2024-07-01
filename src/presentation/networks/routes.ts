@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { NetworksController } from "./controller";
 import { NetworkService, SharedService } from "../services";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 
 export class NetworksRoutes {
@@ -11,14 +12,12 @@ export class NetworksRoutes {
         const networkService = new NetworkService(sharedService);
         const controller = new NetworksController(networkService);
 
-        router.get("/", controller.getNetworks);
-        router.get("/:id", controller.getNetworkById);
-
-        router.post("/", controller.createNetwork);
-
-        router.put("/:id", controller.updateNetwork);
-
-        router.delete("/:id", controller.deleteNetwork);
+        router.get("/",       [ AuthMiddleware.validateAdminToken ], controller.getNetworks);
+        router.get("/:id",    [ AuthMiddleware.validateAdminToken ], controller.getNetworkById);
+        router.post("/",      [ AuthMiddleware.validateAdminToken ], controller.createNetwork);
+        router.put("/:id",    [ AuthMiddleware.validateAdminToken ], controller.updateNetwork);
+        router.delete("/:id", [ AuthMiddleware.validateSuperAdminToken ], controller.deleteNetwork);
+        
         return router;
     };
 }
@@ -98,6 +97,7 @@ export class NetworksRoutes {
  *         description: network id
  *     requestBody:
  *       required: true
+ *       description: All properties are optional, except for the id.
  *       content:
  *         application/json:
  *           schema:

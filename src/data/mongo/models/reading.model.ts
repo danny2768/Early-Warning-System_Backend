@@ -9,11 +9,7 @@ const readingSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: "Sensor",
         required: [ true, 'sensor is required'],
-    },
-    sentAt: {
-        type: Date,
-        required: [ true, 'sentAt is required'],
-    }
+    },    
 }, {    
     timestamps: true,
 });

@@ -1,5 +1,5 @@
-import { NetworkModel, StationModel, SensorModel } from "../../data";
-import { CustomError, NetworkEntity, SensorEntity, StationEntity } from "../../domain";
+import { NetworkModel, StationModel, SensorModel, UserModel, ReadingModel, SubscriptionModel } from "../../data";
+import { CustomError, NetworkEntity, SensorEntity, StationEntity, UserEntity } from "../../domain";
 
 
 export class SharedService {
@@ -42,4 +42,58 @@ export class SharedService {
         return true;
     };
 
+    public async validateUserById( id: string ): Promise<boolean> {
+        const user = await UserModel.exists({ _id: id });
+        if (!user) throw CustomError.badRequest(`No user with id ${id} has been found`);
+        
+        return true;
+    }
+
+    public async validateNoStationAssociatedWithNetwork(networkId: string): Promise<boolean> {
+        const associatedStationsCount = await StationModel.countDocuments({ networkId: networkId });
+        if (associatedStationsCount > 0) {
+            throw CustomError.badRequest(`Cannot delete network with id ${networkId} because it is referenced by one or more stations.`);
+        }
+        return true;
+    }
+
+    public async validateNoSensorAssociatedWithStation(stationId: string): Promise<boolean> {
+        const associatedSensorsCount = await SensorModel.countDocuments({ stationId: stationId });
+        if (associatedSensorsCount > 0) {
+            throw CustomError.badRequest(`Cannot delete station with id ${stationId} because it is referenced by one or more sensors.`);
+        }
+        return true;
+    }
+
+    public async deleteReadingsBySensorId(sensorId: string): Promise<boolean> {
+        await ReadingModel.deleteMany({ sensor: sensorId });
+        return true;
+    }
+
+    public async removeStationFromSubscriptions(stationId: string): Promise<void> {
+        await SubscriptionModel.updateMany(
+            {}, // Filter for all documents
+            { $pull: { stationIds: stationId } } // Pull (remove) the stationId from the stationIds array
+        );
+    }
+
+    public async deleteSubscriptionsForUser(userId: string): Promise<void> {
+        await SubscriptionModel.deleteMany({ userId: userId });
+    }
+
+    public async getUserById(id: string) {
+        this.validateId(id);
+        try {
+            const user = await UserModel.findById(id);
+            if (!user) throw CustomError.badRequest(`No user with id ${id} has been found`);
+            
+            const { password, ...userEntity } = UserEntity.fromObj(user);
+
+            return userEntity;
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);                        
+        }
+
+    }
 }

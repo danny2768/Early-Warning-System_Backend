@@ -41,37 +41,36 @@ export class ReadingService {
                 readings: readingsObj
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);            
         }        
     };
     
 
-    public async createReading( createReadingDto: CreateReadingDto ) {
-        
-        await this.validateSensorId( createReadingDto.sensor );
-
+    public async createReading( createReadingDto: CreateReadingDto ) {            
         try {
+            await this.validateSensorId( createReadingDto.sensor );
             const reading = new ReadingModel( createReadingDto );
             await reading.save();
 
             return ReadingEntity.fromObj(reading);
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };
 
     public async updateReading( updateReadingDto: UpdateReadingDto ) {
-        const { id, ...updateOptions } = updateReadingDto;
-        this.sharedService.validateId(id);
-
-        if (updateOptions.sensor) await this.validateSensorId( updateOptions.sensor );
-
+        const { id, ...updateOptions } = updateReadingDto;            
         try {
+            this.sharedService.validateId(id);
+            if (updateOptions.sensor) await this.validateSensorId( updateOptions.sensor );
             const reading = await ReadingModel.findByIdAndUpdate( id, updateOptions, { new: true });
             if (!reading) throw CustomError.badRequest(`No reading with id ${id} has been found`);
 
             return ReadingEntity.fromObj(reading);        
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };
@@ -86,6 +85,7 @@ export class ReadingService {
                 reading: ReadingEntity.fromObj(reading)
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);            
         }
     };

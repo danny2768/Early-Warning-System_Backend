@@ -6,6 +6,7 @@ import { StationsRoutes } from "./stations/routes";
 import { NetworksRoutes } from "./networks/routes";
 import { ReadingsRoutes } from "./readings/routes";
 import { AuthMiddleware } from "./middlewares/auth.middleware";
+import { SubscriptionsRoutes } from "./subscriptions/routes";
 
 export class AppRoutes {
 
@@ -13,13 +14,13 @@ export class AppRoutes {
         const router = Router();
 
         // Routes
-        router.use('/auth', AuthRoutes.routes );            
-        router.use('/api/users', [ AuthMiddleware.validateAdminToken ], UsersRoutes.routes );
-        router.use('/api/readings', [ AuthMiddleware.validateAdminToken ], ReadingsRoutes.routes );
-        router.use('/api/sensors',  [ AuthMiddleware.validateAdminToken ], SensorsRoutes.routes  );
-        router.use('/api/stations', [ AuthMiddleware.validateAdminToken ], StationsRoutes.routes );
-        router.use('/api/networks', [ AuthMiddleware.validateAdminToken ], NetworksRoutes.routes );                
-        
+        router.use('/auth',         AuthRoutes.routes );            
+        router.use('/api/users',    UsersRoutes.routes );
+        router.use('/api/readings', ReadingsRoutes.routes );
+        router.use('/api/sensors',  SensorsRoutes.routes  );
+        router.use('/api/stations', StationsRoutes.routes );
+        router.use('/api/networks', NetworksRoutes.routes );
+        router.use('/api/subscriptions', SubscriptionsRoutes.routes );
 
         return router;
     }

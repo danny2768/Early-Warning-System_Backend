@@ -12,10 +12,11 @@ export class UpdateStationDto {
         public readonly coordinates?: Coordinates,
         public readonly city?: string,
         public readonly networkId?: string,
+        public readonly isVisibleToUser?: boolean,
     ) {}
 
     public static create(object: { [key: string]: any }): [ string?, UpdateStationDto? ] {
-        const { id, name, state, countryCode, coordinates, city, networkId } = object;
+        const { id, name, state, countryCode, coordinates, city, networkId, isVisibleToUser } = object;
 
         if (!id) return ['Property id is required']        
         if (typeof id !== 'string') return ['id property must be a string'];
@@ -53,6 +54,23 @@ export class UpdateStationDto {
             if (city.trim() === '') return ['city property must be a non-empty string'];
         };
 
-        return [undefined, new UpdateStationDto( id, name, state, countryCode, coordinates, city, networkId )];
+        let isVisibleToUserBool: boolean = true;
+        if (isVisibleToUser) {
+            if (typeof isVisibleToUser === 'boolean') {
+                isVisibleToUserBool = isVisibleToUser;
+            } else if (typeof isVisibleToUser === 'string') {
+                if (isVisibleToUser.toLowerCase() === 'true') {
+                    isVisibleToUserBool = true;
+                } else if (isVisibleToUser.toLowerCase() === 'false') {
+                    isVisibleToUserBool = false;
+                } else {
+                    return ['Property isVisibleToUser must be a boolean or a string that represents a boolean'];
+                }
+            } else {
+                return ['Property isVisibleToUser must be a boolean'];
+            }
+        }
+
+        return [undefined, new UpdateStationDto( id, name, state, countryCode, coordinates, city, networkId, isVisibleToUserBool )];
     }
 }

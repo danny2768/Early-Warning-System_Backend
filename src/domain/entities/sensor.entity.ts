@@ -1,3 +1,4 @@
+import { send } from "process";
 import { CustomError } from "../errors/custom.errors";
 import { Threshold } from "../interfaces/threshold.interface";
 import { SensorType } from "../interfaces/types";
@@ -11,22 +12,24 @@ export class SensorEntity {
         public sensorType: SensorType,        
         public sendingInterval: number,
         public stationId: string,
+        public sendAlerts: boolean,
         public threshold?: Threshold,
         public createdAt?: Date,
         public updatedAt?: Date,
     ) {}
 
     public static fromObj( object: { [key:string]: any }) {
-        const { id, _id, name, sensorType, sendingInterval, stationId, threshold, createdAt, updatedAt, } = object; 
+        const { id, _id, name, sensorType, sendingInterval, stationId, sendAlerts, threshold, createdAt, updatedAt, } = object; 
 
         if (!id && !_id) throw CustomError.badRequest("Missing id");
         if (!name) throw CustomError.badRequest("Missing name");            
         if (!sensorType) throw CustomError.badRequest("Missing sensorType");            
         if (!sendingInterval) throw CustomError.badRequest("Missing sendingInterval");
         if (!stationId) throw CustomError.badRequest("Missing stationId");
+        if (!sendAlerts) throw CustomError.badRequest("Missing sendAlerts");
         // if (!threshold) throw CustomError.badRequest("Missing threshold");
 
         
-        return new SensorEntity( id || _id, name, sensorType, sendingInterval, stationId, threshold, createdAt, updatedAt, );
+        return new SensorEntity( id || _id, name, sensorType, sendingInterval, stationId, sendAlerts, threshold, createdAt, updatedAt, );
     }
 }

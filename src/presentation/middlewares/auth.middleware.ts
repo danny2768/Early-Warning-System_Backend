@@ -3,64 +3,85 @@ import { JwtAdapter } from "../../config";
 import { UserModel } from "../../data";
 import { UserEntity } from "../../domain";
 
-
 export class AuthMiddleware {
-
     constructor() {}
 
-    static async validateAdminToken( req: Request, res: Response, next: NextFunction ) {
+    private static async extractAndValidateToken(req: Request, expectedRoles: string[] = []) {
         const authorization = req.header('Authorization');
-        if (!authorization) return res.status(401).json({ error: 'Unauthorized. No token provided' }); 
+        if (!authorization) throw { status: 401, message: 'Unauthorized. No token provided' };
 
-        if (!authorization.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized. Invalid Bearer token' });
+        if (!authorization.startsWith('Bearer ')) throw { status: 401, message: 'Unauthorized. Invalid Bearer token' };
 
         const token = authorization.split(' ').at(1) || '';
+        const payload = await JwtAdapter.verifyToken<{ id: string, role?: string }>(token);
+        if (!payload) throw { status: 401, message: 'Unauthorized. Invalid token' };
 
-        try {
-            const payload = await JwtAdapter.verifyToken<{ id: string }>(token);
-            if (!payload) return res.status(401).json({ error: 'Unauthorized. Invalid token' });
+        const user = await UserModel.findById(payload.id);
+        if (!user) throw { status: 401, message: 'Unauthorized. Invalid token' };
 
-            const user = await UserModel.findById( payload.id );
-            if (!user) return res.status(401).json({ error: 'Unauthorized. Invalid token' });
-            
-            if (!user.role.includes('ADMIN_ROLE')) return res.status(403).json({ error: 'Forbidden. You dont have permission to access this resource' });
-
-            req.body.user = UserEntity.fromObj(user);
-
-            next();
-
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: 'Internal server error' });
+        if (expectedRoles.length && !expectedRoles.some(role => user.role.includes(role))) {
+            throw { status: 403, message: 'Forbidden. You dont have permission to access this resource' };
         }
-    
+
+        return user;
     }
 
-    
-    static async validateToken( req: Request, res: Response, next: NextFunction ) {
-        const authorization = req.header('Authorization');
-        if (!authorization) return res.status(401).json({ error: 'Unauthorized. No token provided' }); 
-
-        if (!authorization.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized. Invalid Bearer token' });
-
-        const token = authorization.split(' ').at(1) || '';
-
+    private static async validateTokenWithRole(req: Request, res: Response, next: NextFunction, roles: string[]) {
         try {
-            const payload = await JwtAdapter.verifyToken<{ id: string }>(token);
-            if (!payload) return res.status(401).json({ error: 'Unauthorized. Invalid token' });
-
-            const user = await UserModel.findById( payload.id );
-            if (!user) return res.status(401).json({ error: 'Unauthorized. Invalid token' });
-            
-            if (!user.role.includes('ADMIN_ROLE') && !user.role.includes('USER_ROLE')) return res.status(401).json({ error: 'Unauthorized. Invalid token' });
-
+            const user = await AuthMiddleware.extractAndValidateToken(req, roles);
             req.body.user = UserEntity.fromObj(user);
-
             next();
-
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: 'Internal server error' });
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message || 'Internal server error' });
+            if (error.status === 500 || !error.status) {
+                console.log(error);
+            }
         }
     }
+
+    static async validateSelfOrAdminToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = await AuthMiddleware.extractAndValidateToken(req);
+            if (req.params.id === user.id || user.role.includes('ADMIN_ROLE') || user.role.includes('SUPER_ADMIN_ROLE')) {
+                req.body.user = UserEntity.fromObj(user);
+                next();
+            } else {
+                throw { status: 403, message: 'Forbidden. You dont have permission to access this resource' };
+            }
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message || 'Internal server error' });
+            if (error.status === 500 || !error.status) {
+                console.log(error);
+            }
+        }
+    }
+
+    static async validateSelfOrSuperAdminToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = await AuthMiddleware.extractAndValidateToken(req);
+            if (req.params.id === user.id || user.role.includes('SUPER_ADMIN_ROLE')) {
+                req.body.user = UserEntity.fromObj(user);
+                next();
+            } else {
+                throw { status: 403, message: 'Forbidden. You dont have permission to access this resource' };
+            }
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message || 'Internal server error' });
+            if (error.status === 500 || !error.status) {
+                console.log(error);
+            }
+        }
+    }
+
+    static async validateSuperAdminToken(req: Request, res: Response, next: NextFunction) {
+        await AuthMiddleware.validateTokenWithRole(req, res, next, ['SUPER_ADMIN_ROLE']);
+    }
+
+    static async validateAdminToken(req: Request, res: Response, next: NextFunction) {
+        await AuthMiddleware.validateTokenWithRole(req, res, next, ['ADMIN_ROLE', 'SUPER_ADMIN_ROLE']);
+    }
+
+    static async validateUserToken(req: Request, res: Response, next: NextFunction) {
+        await AuthMiddleware.validateTokenWithRole(req, res, next, ['USER_ROLE']);
+    }    
 }

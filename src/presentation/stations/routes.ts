@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { SharedService, StationService } from "../services";
 import { StationsController } from "./controller";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 export class StationsRoutes {
     
@@ -10,15 +11,13 @@ export class StationsRoutes {
         const stationService = new StationService(sharedService);
         const controller = new StationsController(stationService);
 
-        router.get("/", controller.getStations);
-        router.get("/by-network/:id", controller.getStationsByNetworkId);
-        router.get("/:id", controller.getStationById);
-
-        router.post("/", controller.createStation);
-
-        router.put("/:id", controller.updateStation);
-
-        router.delete("/:id", controller.deleteStation);
+        router.get("/",               [ AuthMiddleware.validateAdminToken ], controller.getStations);
+        router.get("/userVisible",    [ AuthMiddleware.validateUserToken ], controller.getStationsVisibleToUser)
+        router.get("/by-network/:id", [ AuthMiddleware.validateAdminToken ], controller.getStationsByNetworkId);
+        router.get("/:id",            [ AuthMiddleware.validateAdminToken ], controller.getStationById);
+        router.post("/",              [ AuthMiddleware.validateAdminToken ], controller.createStation);
+        router.put("/:id",            [ AuthMiddleware.validateAdminToken ], controller.updateStation);
+        router.delete("/:id",         [ AuthMiddleware.validateSuperAdminToken ], controller.deleteStation);
         
         return router;
     }
@@ -86,7 +85,7 @@ export class StationsRoutes {
  *     tags: [Stations]
  *     requestBody:
  *       required: true
- *       description: The properties city & networkId are optional
+ *       description: The property city is optional
  *       content:
  *         application/json:
  *           schema:
@@ -109,6 +108,8 @@ export class StationsRoutes {
  *                 type: string
  *               networkId:
  *                 type: string
+ *               isVisibleToUser:
+ *                 type: boolean
  *     responses:
  *       "200":
  *         description: A station schema
@@ -131,6 +132,7 @@ export class StationsRoutes {
  *         description: station id
  *     requestBody:
  *       required: true
+ *       description: All properties are optional, except for the id.
  *       content:
  *         application/json:
  *           schema:
@@ -153,6 +155,8 @@ export class StationsRoutes {
  *                 type: string
  *               networkId:
  *                 type: string
+ *               isVisibleToUser:
+ *                 type: boolean
  *     responses:
  *       "200":
  *         description: Station updated successfully

@@ -52,22 +52,61 @@ export class StationService {
                 stations: stationsObj
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);                        
         }    
     };
 
+    public async getStationsVisibleToUser( paginationDto: PaginationDto ) {
+        const { page, limit } = paginationDto;
+        try {
+            const [ total, stations ] = await Promise.all([
+                StationModel.countDocuments({ isVisibleToUser: true }),
+                StationModel.find({ isVisibleToUser: true })
+                    .skip( (page - 1) * limit )
+                    .limit( limit )
+            ]);
+
+            const stationsObj = stations.map( station => StationEntity.fromObj(station) );
+
+            const totalPages = Math.ceil( total / limit );
+
+            return {
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    totalItems: total,
+                    totalPages: totalPages,
+                    next: (page < totalPages) ? `/api/stations/userVisible?page=${page + 1}&limit=${limit}` : null,
+                    prev: (page - 1 > 0) ? `/api/stations/userVisible?page=${page - 1}&limit=${limit}` : null,
+                    first: `/api/stations/userVisible?page=1&limit=${limit}`,
+                    last: `/api/stations/userVisible?page=${totalPages}&limit=${limit}`,
+                },
+                stations: stationsObj
+            }
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);                        
+        }
+    }
+
     public async getStationById( id: string ) {
-        this.sharedService.validateId(id);
-        const station = await StationModel.findById(id);
-        if (!station) throw CustomError.badRequest(`No station with id ${id} has been found`);
-    
-        return StationEntity.fromObj(station);
+        try {
+            this.sharedService.validateId(id);
+            const station = await StationModel.findById(id);
+            if (!station) throw CustomError.badRequest(`No station with id ${id} has been found`);
+            
+            return StationEntity.fromObj(station);
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);
+        }    
     };
 
     public async getStationsByNetworkId( networkId: string, paginationDto: PaginationDto ) {
         const { page, limit } = paginationDto;
-        this.validateNetworkId(networkId);
         try {
+            await this.validateNetworkId(networkId);
             const [ total,  stations ] = await Promise.all([
                 StationModel.countDocuments({ networkId }),
                 StationModel.find({ networkId })
@@ -93,6 +132,7 @@ export class StationService {
                 stations: stationsObj
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);                        
         }
     }
@@ -109,6 +149,7 @@ export class StationService {
 
             return StationEntity.fromObj(station);
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);            
         }
     };
@@ -125,6 +166,7 @@ export class StationService {
 
             return StationEntity.fromObj(station);
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
 
@@ -133,6 +175,13 @@ export class StationService {
     public async deleteStation( id: string ) {
         this.sharedService.validateId(id);
         try {
+            // Check if any sensor is associated with this station
+            await this.sharedService.validateNoSensorAssociatedWithStation(id);
+
+            // Remove the station from all subscriptions before deletion
+            await this.sharedService.removeStationFromSubscriptions(id);
+
+            // Proceed with station deletion if no sensor is associated
             const station = await StationModel.findByIdAndDelete(id);
             if (!station) throw CustomError.badRequest(`No station with id ${id} has been found`);
             return {
@@ -140,6 +189,7 @@ export class StationService {
                 station: StationEntity.fromObj(station)
             }
         } catch (error) {
+            if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
     };

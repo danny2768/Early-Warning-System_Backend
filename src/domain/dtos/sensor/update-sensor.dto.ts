@@ -11,11 +11,12 @@ export class UpdateSensorDto {
         public readonly threshold?: Threshold,
         public readonly sendingInterval?: number,
         public readonly stationId?: string,
+        public readonly sendAlerts?: boolean,
     ) {}
 
     public static create(object: { [key: string]: any }): [ string?, UpdateSensorDto? ] {
         
-        const { id, name, sensorType, threshold, sendingInterval, stationId } = object;
+        const { id, name, sensorType, threshold, sendingInterval, stationId, sendAlerts } = object;
 
         if (!id) return ['Property id is required'];
         if (typeof id !== 'string') return ['id property must be a string'];
@@ -54,6 +55,10 @@ export class UpdateSensorDto {
             if (stationId.trim() === '') return ['stationId property must be a non-empty string'];
         }
 
-        return [undefined, new UpdateSensorDto( id, name, sensorType, threshold, sendingInterval, stationId )];
+        if (sendAlerts) {
+            if (typeof sendAlerts !== 'boolean') return ['Property sendAlerts must be a boolean']
+        }
+
+        return [undefined, new UpdateSensorDto( id, name, sensorType, threshold, sendingInterval, stationId, sendAlerts )];
     }
 }

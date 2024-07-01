@@ -8,7 +8,7 @@ const stationSchema = new mongoose.Schema({
     city: {
         type: String,
         // required: [ true, 'city is required'],
-    },        
+    },
     state: {
         type: String,
         required: [ true, 'state is required'],     
@@ -32,8 +32,12 @@ const stationSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         required: [ true, 'networkId is required'],
         ref: 'Network',        
-    }
-
+    },
+    isVisibleToUser: {
+        type: Boolean,
+        required: true,
+        default: true,
+    },
 }, {
     timestamps: true,
 });

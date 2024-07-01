@@ -4,6 +4,7 @@ import { SharedService, UserService } from "../services";
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
 import { envs } from "../../config";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 
 export class UsersRoutes {
@@ -21,14 +22,11 @@ export class UsersRoutes {
         const userService = new UserService(sharedService, authService);
         const controller = new UsersController( userService );
 
-        router.get("/", controller.getUsers);
-        router.get("/:id", controller.getUserById);
-
-        router.post("/", controller.createUser);
-
-        router.put("/:id", controller.updateUser); // It should be a PATCH request
-
-        router.delete("/:id", controller.deleteUser);
+        router.get("/",       [ AuthMiddleware.validateAdminToken ], controller.getUsers);
+        router.get("/:id",    [ AuthMiddleware.validateSelfOrAdminToken ], controller.getUserById);
+        router.post("/",      [ AuthMiddleware.validateAdminToken ], controller.createUser);
+        router.put("/:id",    [ AuthMiddleware.validateSelfOrAdminToken ], controller.updateUser); 
+        router.delete("/:id", [ AuthMiddleware.validateSelfOrSuperAdminToken ], controller.deleteUser);
         
         return router;
     }
@@ -78,6 +76,7 @@ export class UsersRoutes {
  *     tags: [Users]
  *     requestBody:
  *       required: true
+ *       description: Phone property is optional
  *       content:
  *         application/json:
  *           schema:
@@ -92,6 +91,14 @@ export class UsersRoutes {
  *               role:
  *                 type: string
  *                 enum: ['USER_ROLE', 'ADMIN_ROLE']
+ *               phone:
+ *                 type: object
+ *                 properties:
+ *                   countryCode:
+ *                     type: string
+ *                   number:
+ *                     type: string
+ * 
  *     responses:
  *       "200":
  *         description: A user schema
@@ -114,6 +121,7 @@ export class UsersRoutes {
  *         description: User id
  *     requestBody:
  *       required: true
+ *       description: All properties are optional, except for the id.
  *       content:
  *         application/json:
  *           schema:
@@ -128,6 +136,13 @@ export class UsersRoutes {
  *               role:
  *                 type: string
  *                 enum: ['USER_ROLE', 'ADMIN_ROLE']
+ *               phone:
+ *                 type: object
+ *                 properties:
+ *                   countryCode:
+ *                     type: string
+ *                   number:
+ *                     type: string
  *     responses:
  *       "200":
  *         description: User updated successfully
