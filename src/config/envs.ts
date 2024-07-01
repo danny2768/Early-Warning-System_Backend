@@ -17,6 +17,11 @@ export const envs = {
     MAILER_EMAIL: get("MAILER_EMAIL").required().asString(),
     MAILER_SECRET_KEY: get("MAILER_SECRET_KEY").required().asString(),
 
+    // Whatsapp
+    WHATSAPP_API_VERSION: get("WHATSAPP_API_VERSION").required().asString(),
+    WHATSAPP_PHONE_NUMBER_ID: get("WHATSAPP_PHONE_NUMBER_ID").required().asString(),
+    WHATSAPP_AUTH_TOKEN: get("WHATSAPP_AUTH_TOKEN").required().asString(),
+
     // Environment variable to send verification email
     SEND_EMAIL: get("SEND_EMAIL").default('false').asBool(),
 
