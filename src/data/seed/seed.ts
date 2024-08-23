@@ -14,19 +14,23 @@ import { seedData } from "./data";
         process.exit(1);
     }
 
-    MongoDatabase.connect({
-        dbName: envs.MONGO_DB_NAME,
-        mongoUrl: envs.MONGO_URL,
-    }).then(() => console.log("Database connected successfully"))
-      .catch(err => console.error("Database connection error:", err));
-    
+    try {
+        await MongoDatabase.connect({
+            dbName: envs.MONGO_DB_NAME,
+            mongoUrl: envs.MONGO_URL,
+        });
+        console.log("Database connected successfully");
 
-    await main();
+        await main();
 
-    await MongoDatabase.disconnect()
-        .then(() => console.log("Database disconnected successfully"))
-        .catch(err => console.error("Database disconnection error:", err));
-;
+        await MongoDatabase.disconnect();
+        console.log("Database disconnected successfully");
+
+    } catch (err) {
+        console.error("Error during seeding process:", err);
+        process.exit(1);
+    }
+
 }) ();
 
 const randomBetween0AndX = (x: number) => Math.floor(Math.random() * x);
@@ -135,6 +139,7 @@ async function main() {
 
     // Convert the subscriptions map to an array and insert into the database
     const subscriptions = await SubscriptionModel.insertMany(Object.values(subscriptionsMap));
-    console.log('Subscriptions created');
+    console.log('Subscriptions created\n');
 
+    console.log('Seed data loaded successfully\n');
 }
