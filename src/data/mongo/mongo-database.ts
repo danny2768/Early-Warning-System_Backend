@@ -23,4 +23,15 @@ export class MongoDatabase {
         }
         
     }
+
+    static async disconnect() {
+        try {
+            await mongoose.connection.close();
+            // console.log('Mongo disconnected!');
+            return true;
+        } catch (error) {
+            // console.log('Mongo disconnection error');
+            throw error;
+        }
+    }
 }
