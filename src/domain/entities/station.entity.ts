@@ -1,4 +1,4 @@
-import { CountryCodeAdapter } from "../../config";
+import { CountryAdapter } from "../../config";
 import { CustomError } from "../errors/custom.errors";
 import { Coordinates } from "../interfaces/coordinates.interface";
 
@@ -26,7 +26,7 @@ export class StationEntity {
         if (!state) throw CustomError.badRequest("Missing state");
         
         if (!countryCode) throw CustomError.badRequest("Missing countryCode");
-        if (!CountryCodeAdapter.validateCountryCode(countryCode)) throw CustomError.badRequest("Invalid countryCode");
+        if (!CountryAdapter.validateCountryCode(countryCode)) throw CustomError.badRequest("Invalid countryCode");
 
         if (!coordinates) throw CustomError.badRequest("Missing coordinates");
         

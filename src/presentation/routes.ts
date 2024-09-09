@@ -7,6 +7,7 @@ import { NetworksRoutes } from "./networks/routes";
 import { ReadingsRoutes } from "./readings/routes";
 import { AuthMiddleware } from "./middlewares/auth.middleware";
 import { SubscriptionsRoutes } from "./subscriptions/routes";
+import { CountryRoutes } from "./countries/routes";
 
 export class AppRoutes {
 
@@ -21,6 +22,7 @@ export class AppRoutes {
         router.use('/api/stations', StationsRoutes.routes );
         router.use('/api/networks', NetworksRoutes.routes );
         router.use('/api/subscriptions', SubscriptionsRoutes.routes );
+        router.use('/api/countries',     CountryRoutes.routes );
 
         return router;
     }

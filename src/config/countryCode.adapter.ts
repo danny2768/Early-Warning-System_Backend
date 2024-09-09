@@ -1,15 +1,13 @@
-import * as lookup from 'country-code-lookup'
+import countriesJson from "../data/file-system/countries.json"
 
-
-export class CountryCodeAdapter {
-
+export class CountryAdapter {    
     public static validateCountryCode(countryCode: string): boolean {
-        if ( !!lookup.byIso(countryCode) ) return true;                            
-        return false;
+        const countries = countriesJson;
+        return countries.some((country) => country.iso3 === countryCode);
     }
 
     public static getCountryName(countryCode: string): string | undefined {
-        return lookup.byIso(countryCode)?.country;        
-    }    
+        const countries = countriesJson;
+        return countries.find((country) => country.iso3 === countryCode)?.name;
+    }
 }
-

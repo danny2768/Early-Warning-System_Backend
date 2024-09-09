@@ -1,5 +1,5 @@
 import { Coordinates } from "../..";
-import { CountryCodeAdapter } from "../../../config";
+import { CountryAdapter } from "../../../config";
 
 
 export class CreateStationDto {
@@ -23,7 +23,7 @@ export class CreateStationDto {
         if (!countryCode) return ['Property countryCode is required'];
         if (typeof countryCode !== 'string') return ['Property countryCode must be a string'];        
         if (countryCode.length < 2 || countryCode.length > 3) return ['Invalid countryCode'];
-        if (!CountryCodeAdapter.validateCountryCode(countryCode)) return ['Invalid countryCode'];
+        if (!CountryAdapter.validateCountryCode(countryCode)) return ['Invalid countryCode'];
 
         if (!coordinates) return ['Property coordinates is required'];
 
