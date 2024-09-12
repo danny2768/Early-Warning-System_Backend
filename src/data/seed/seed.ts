@@ -20,16 +20,16 @@ import { seedData } from "./data";
             mongoUrl: envs.MONGO_URL,
         });
         console.log("Database connected successfully");
-
+    
         await main();
-
-        await MongoDatabase.disconnect();
-        console.log("Database disconnected successfully");
-
+    
     } catch (err) {
         console.error("Error during seeding process:", err);
-        process.exit(1);
-    }
+    } finally {
+        await MongoDatabase.disconnect();
+        console.log("Database disconnected successfully");
+        process.exit(0);
+    }    
 
 }) ();
 
