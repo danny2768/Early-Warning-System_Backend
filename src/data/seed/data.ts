@@ -31,6 +31,13 @@ export const seedData = {
             password: BcryptAdapter.hash('useruser'),
             role: ['USER_ROLE'],
         },
+        {
+            name: 'User 2',
+            email: 'user2@user.com',
+            emailValidated: false,
+            password: BcryptAdapter.hash('user2user'),
+            role: ['USER_ROLE'],
+        },
     ],
     networks: [
         { name: 'Network 1', description: 'Description of network 1' },
