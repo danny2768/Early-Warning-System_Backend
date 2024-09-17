@@ -69,7 +69,7 @@ export class AuthService {
 
         // Validating if the password is correct
         const isMatch: boolean = BcryptAdapter.compare( loginUserDto.password, user.password );
-        if (!isMatch) throw CustomError.badRequest('Incorrect password');
+        if (!isMatch) throw CustomError.unauthorized('Incorrect password');
 
         const { password, ...userEntity } = UserEntity.fromObj( user );
         const token = await this.generateToken( { id: user.id } );
