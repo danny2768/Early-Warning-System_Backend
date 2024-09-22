@@ -197,17 +197,22 @@ export class SubscriptionService {
     public async addSubscription(stationId: string, currentUser: UserEntity) {
         try {
             await this.sharedService.validateId(stationId);
-
+            
             let subscription = await SubscriptionModel.findOne({ userId: currentUser.id });
             let subscriptionObj = subscription ? SubscriptionEntity.fromObj(subscription) : null;
 
             if (!subscription) {
                 // Create a new subscription if it doesn't exist
-                const createSubscriptionDto = CreateSubscriptionDto.create({
+                const [error, createSubscriptionDto] = CreateSubscriptionDto.create({
                     userId: currentUser.id,
                     stationIds: [stationId],
-                    contactMethods: {}
+                    contactMethods: {
+                        email: true,
+                        whatsapp: true,
+                    }
                 });
+
+                if (error) throw CustomError.badRequest(error);
 
                 subscription = new SubscriptionModel(createSubscriptionDto);
                 await subscription.save();
