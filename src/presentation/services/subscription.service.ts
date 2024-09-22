@@ -20,6 +20,11 @@ export class SubscriptionService {
         );        
     }
 
+    private async validateStationId( stationId: string ) {
+        this.sharedService.validateId(stationId, 'Invalid stationId'); // Regex validation
+        await this.sharedService.validateStationById(stationId); // DB validation existance
+    }
+
     private async validateUserId( userId: string ) {
         this.sharedService.validateId(userId, 'Invalid userId'); // Regex validation
         await this.sharedService.validateUserById(userId); // DB validation existance
@@ -196,7 +201,7 @@ export class SubscriptionService {
 
     public async addSubscription(stationId: string, currentUser: UserEntity) {
         try {
-            await this.sharedService.validateId(stationId);
+            await this.validateStationId(stationId);
             
             let subscription = await SubscriptionModel.findOne({ userId: currentUser.id });
             let subscriptionObj = subscription ? SubscriptionEntity.fromObj(subscription) : null;
