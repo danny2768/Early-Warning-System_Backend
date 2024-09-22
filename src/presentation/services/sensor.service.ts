@@ -84,7 +84,10 @@ export class SensorService {
                     .limit(limit)
             ]);
 
-            const readingsObj = readings.map(reading => ReadingEntity.fromObj(reading));
+            const readingsObj = readings.map(reading => {
+                const { id, sensor, updatedAt, ...rest } = ReadingEntity.fromObj(reading);
+                return rest;
+            });
             
             const totalPages = Math.ceil(total / limit);
             return  {
