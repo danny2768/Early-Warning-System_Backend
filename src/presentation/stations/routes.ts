@@ -43,6 +43,56 @@ export class StationsRoutes {
 
 /**
  * @swagger
+ * /api/stations/userVisible:
+ *  get:
+ *    summary: Get all stations visible to the user
+ *    tags: [Stations]
+ *    security:
+ *      - bearerAuth: []  # Assuming bearer token auth is used for users
+ *    responses:
+ *      200:
+ *        description: OK
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                type: object
+ *                properties:
+ *                  id:
+ *                    type: string
+ *                    description: Station ID
+ *                  name:
+ *                    type: string
+ *                    description: Station name
+ *                  state:
+ *                    type: string
+ *                    description: Station state
+ *                  countryCode:
+ *                    type: string
+ *                    description: Station country code
+ *                  coordinates:
+ *                    type: object
+ *                    properties:
+ *                      longitude:
+ *                        type: number
+ *                      latitude:
+ *                        type: number
+ *                  city:
+ *                    type: string
+ *                    description: Station city
+ *                  isVisibleToUser:
+ *                    type: boolean
+ *                    description: Visibility status for user
+ *      401:
+ *        description: Unauthorized. User token is invalid or missing.
+ *      403:
+ *        description: Forbidden. The user doesn't have permission to access this endpoint.
+ */
+
+
+/**
+ * @swagger
  * /api/stations/by-network/{networkId}:
  *  get:
  *      summary: Get a station by network id
