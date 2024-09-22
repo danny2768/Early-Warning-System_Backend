@@ -19,6 +19,7 @@ export class SubscriptionsRoutes {
         router.post("/",           [ AuthMiddleware.validateUserToken ], controller.createSubscription); 
         router.put("/:id",         [ AuthMiddleware.validateUserToken ], controller.updateSubscription);
         router.delete("/:id",      [ AuthMiddleware.validateUserToken ], controller.deleteSubscription);
+        router.post("/add",        [ AuthMiddleware.validateUserToken ], controller.addSubscription);
 
         // Extra validations are being made in the service for the create, update and delete methods.
 
@@ -169,6 +170,31 @@ export class SubscriptionsRoutes {
  *     responses:
  *       "200":
  *         description: Subscription deleted successfully
+ *       "400":
+ *         description: Bad request
+ *       "404":
+ *         description: Subscription not found
+ */
+
+/**
+ * @swagger
+ * /api/subscriptions/add:
+ *   post:
+ *     summary: Add a station to the current user's subscription
+ *     tags: [Subscriptions]
+ *     requestBody:
+ *       required: true
+ *       description: Add station to subscription
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               stationId:
+ *                 type: string
+ *     responses:
+ *       "200":
+ *         description: Subscription updated successfully
  *       "400":
  *         description: Bad request
  *       "404":

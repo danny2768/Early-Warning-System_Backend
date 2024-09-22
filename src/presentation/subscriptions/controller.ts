@@ -69,5 +69,13 @@ export class SubscriptionsController {
             .catch( error => this.handleError(error, res) );
     };
 
+    public addSubscription = (req: Request, res: Response) => {
+        const { stationId } = req.body;
+        const currentUser = req.body.user;
+
+        this.subscriptionService.addSubscription(stationId, currentUser)
+            .then(subscription => res.json(subscription))
+            .catch(error => this.handleError(error, res));
+    };
     
 }

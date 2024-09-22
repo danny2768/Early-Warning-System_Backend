@@ -2,6 +2,7 @@ import { SubscriptionModel } from "../../data/mongo/models/subscription.model";
 import { CreateSubscriptionDto, CustomError, PaginationDto, SubscriptionEntity, UserEntity } from "../../domain";
 import { SharedService } from "./shared.service";
 import { UpdateSubscriptionDto } from '../../domain/dtos/subscription/update-subscription.dto';
+import mongoose from "mongoose";
 
 export class SubscriptionService {
 
@@ -193,4 +194,35 @@ export class SubscriptionService {
         }
     };
 
+    public async addSubscription(stationId: string, currentUser: UserEntity) {
+        try {
+            await this.sharedService.validateId(stationId);
+
+            let subscription = await SubscriptionModel.findOne({ userId: currentUser.id });
+            let subscriptionObj = subscription ? SubscriptionEntity.fromObj(subscription) : null;
+
+            if (!subscription) {
+                // Create a new subscription if it doesn't exist
+                const createSubscriptionDto = CreateSubscriptionDto.create({
+                    userId: currentUser.id,
+                    stationIds: [stationId],
+                    contactMethods: {}
+                });
+
+                subscription = new SubscriptionModel(createSubscriptionDto);
+                await subscription.save();
+            } else {
+                // Add the station to the existing subscription
+                if (subscriptionObj && !subscriptionObj.stationIds.includes(stationId)) {
+                    subscription.stationIds.push(new mongoose.Types.ObjectId(stationId));
+                    await subscription.save();
+                }
+            }
+
+            return SubscriptionEntity.fromObj(subscription);
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);
+        }
+    }
 }
