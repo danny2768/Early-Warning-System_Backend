@@ -23,6 +23,7 @@ export class UsersRoutes {
         const controller = new UsersController( userService );
 
         router.get("/",       [ AuthMiddleware.validateAdminToken ], controller.getUsers);
+        router.get("/self",   [ AuthMiddleware.validateUserToken ], controller.getSelf);
         router.get("/:id",    [ AuthMiddleware.validateSelfOrAdminToken ], controller.getUserById);
         router.post("/",      [ AuthMiddleware.validateAdminToken ], controller.createUser);
         router.put("/:id",    [ AuthMiddleware.validateSelfOrAdminToken ], controller.updateUser); 
@@ -48,6 +49,21 @@ export class UsersRoutes {
  *      responses:
  *          200:
  *              description: OK
+ */
+
+/**
+ * @swagger
+ * /api/users/self:
+ *   get:
+ *     summary: Get the current user's information
+ *     tags: [Users]
+ *     responses:
+ *       "200":
+ *         description: User information retrieved successfully
+ *       "400":
+ *         description: Bad request
+ *       "404":
+ *         description: User not found
  */
 
 /**

@@ -28,6 +28,14 @@ export class UsersController {
             .catch( error => this.handleError(error, res) );
     };
     
+    public getSelf = (req: Request, res: Response) => {
+        const currentUser = req.body.user;
+
+        this.userService.getSelf(currentUser)
+            .then(user => res.json(user))
+            .catch(error => this.handleError(error, res));
+    };
+
     public getUserById = ( req: Request, res: Response ) => {
         this.userService.getUserById(req.params.id)
             .then( user => res.json(user) )

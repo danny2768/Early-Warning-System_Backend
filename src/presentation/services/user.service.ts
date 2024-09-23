@@ -48,6 +48,20 @@ export class UserService {
         }
     };
 
+    public async getSelf(currentUser: UserEntity) {
+        try {
+            const user = await UserModel.findById(currentUser.id);
+            if (!user) throw CustomError.badRequest(`No user with id ${currentUser.id} has been found`);
+            
+            const { password, ...userEntity } = UserEntity.fromObj(user);
+
+            return userEntity;
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);                        
+        }
+    }
+
     public async getUserById( id: string ) {
         this.sharedService.validateId(id);
         try {
