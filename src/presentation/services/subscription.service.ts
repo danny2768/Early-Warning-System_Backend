@@ -1,5 +1,5 @@
 import { SubscriptionModel } from "../../data/mongo/models/subscription.model";
-import { CreateSubscriptionDto, CustomError, PaginationDto, SubscriptionEntity, UserEntity } from "../../domain";
+import { CreateSubscriptionDto, CustomError, PaginationDto, StationEntity, SubscriptionEntity, UserEntity } from "../../domain";
 import { SharedService } from "./shared.service";
 import { UpdateSubscriptionDto } from '../../domain/dtos/subscription/update-subscription.dto';
 import mongoose from "mongoose";
@@ -87,7 +87,43 @@ export class SubscriptionService {
             if (error instanceof CustomError) throw error;
             throw CustomError.internalServer(`${error}`);
         }
-    };    
+    };
+
+    public async getSubscribedStations(currentUser: UserEntity, paginationDto: PaginationDto) {
+        const { page, limit } = paginationDto;
+        try {
+            const subscription = await SubscriptionModel.findOne({ userId: currentUser.id }).populate({
+                path: 'stationIds',
+                options: {
+                    skip: (page - 1) * limit,
+                    limit: limit
+                }
+            });
+    
+            if (!subscription) throw CustomError.notFound(`No subscription found for user ${currentUser.id}`);
+    
+            const total = subscription.stationIds.length;
+            const stations = subscription.stationIds.map(station => StationEntity.fromObj(station));
+            const totalPages = Math.ceil(total / limit);
+    
+            return {
+                pagination: {
+                    page: page,
+                    limit: limit,
+                    totalItems: total,
+                    totalPages: totalPages,
+                    next: (page < totalPages) ? `/api/subscriptions/subscribed-stations?page=${page + 1}&limit=${limit}` : null,
+                    prev: (page - 1 > 0) ? `/api/subscriptions/subscribed-stations?page=${page - 1}&limit=${limit}` : null,
+                    first: `/api/subscriptions/subscribed-stations?page=1&limit=${limit}`,
+                    last: `/api/subscriptions/subscribed-stations?page=${totalPages}&limit=${limit}`,
+                },
+                stations: stations
+            };
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);
+        }
+    }
 
     public async createSubscription( createSubscriptionDto: CreateSubscriptionDto, currentUser: UserEntity ) {                
         try {            

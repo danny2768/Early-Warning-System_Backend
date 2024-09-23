@@ -32,6 +32,18 @@ export class SubscriptionsController {
             .catch( error => this.handleError(error, res) );
     };
 
+    public getSubscribedStations = (req: Request, res: Response) => {
+        const { page = 1, limit = 10 } = req.query;
+        const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+        if (error) return res.status(400).json({error});
+
+        const currentUser = req.body.user;
+
+        this.subscriptionService.getSubscribedStations(currentUser, paginationDto!)
+            .then(stations => res.json(stations))
+            .catch(error => this.handleError(error, res));
+    };
+
     public getSubscriptionById = ( req: Request, res: Response ) => {
         this.subscriptionService.getSubscriptionById(req.params.id)
             .then( subscription => res.json(subscription) )

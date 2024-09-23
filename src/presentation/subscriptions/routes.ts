@@ -14,6 +14,7 @@ export class SubscriptionsRoutes {
         const controller = new SubscriptionsController(subscriptionService);
 
         router.get("/",                     [ AuthMiddleware.validateAdminToken ], controller.getSubscriptions);
+        router.get("/subscribed-stations",  [ AuthMiddleware.validateUserToken ], controller.getSubscribedStations); 
         router.get("/by-user/:id",          [ AuthMiddleware.validateSelfOrAdminToken ], controller.getSubscriptionByUserId);
         router.get("/:id",                  [ AuthMiddleware.validateAdminToken ], controller.getSubscriptionById);
         router.post("/",                    [ AuthMiddleware.validateUserToken ], controller.createSubscription); 
@@ -80,6 +81,21 @@ export class SubscriptionsRoutes {
  *      responses:
  *          200:
  *              description: OK
+ */
+
+/**
+ * @swagger
+ * /api/subscriptions/subscribed-stations:
+ *   get:
+ *     summary: Get the stations the current user is subscribed to
+ *     tags: [Subscriptions]
+ *     responses:
+ *       "200":
+ *         description: List of subscribed stations
+ *       "400":
+ *         description: Bad request
+ *       "404":
+ *         description: Subscription not found
  */
 
 /**
