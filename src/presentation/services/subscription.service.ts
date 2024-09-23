@@ -222,6 +222,18 @@ export class SubscriptionService {
     public async addSubscription(stationId: string, currentUser: UserEntity) {
         try {
             await this.validateStationId(stationId);
+
+            // Check if the user has a phone number
+            // Check if phone is undefined, null, or an empty object
+            if (!currentUser.phone || Object.keys(currentUser.phone).length === 0) {
+                throw CustomError.badRequest('User does not have a phone number');
+            }
+
+            // Ensure that both countryCode and number are present
+            if (!currentUser.phone.countryCode || !currentUser.phone.number) {
+                throw CustomError.badRequest('User does not have a valid phone number');
+            }
+
             
             let subscription = await SubscriptionModel.findOne({ userId: currentUser.id });
             let subscriptionObj = subscription ? SubscriptionEntity.fromObj(subscription) : null;
