@@ -80,6 +80,17 @@ export class AuthService {
         };
     }
 
+    public async sendValidationEmail( user: UserEntity ) {
+        // Validating if the user exists
+        const existsUser = await UserModel.findOne({ email: user.email });
+
+        if (!existsUser) throw CustomError.internalServer('User not found');
+        if (existsUser.emailValidated) throw CustomError.badRequest('Email already validated');
+
+        await this.sendEmailValidationLink( user.email );
+
+    }
+
     public async validateEmail( token: string ) {
         // Validating if the token is valid
         const payload =  await JwtAdapter.verifyToken( token );

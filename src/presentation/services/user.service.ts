@@ -85,6 +85,14 @@ export class UserService {
         this.sharedService.validateId(updateUserDto.id);
         try {
             let updateUser = { ...updateUserDto };
+
+            // Check if the email is already taken by another user
+            if (updateUserDto.email) {
+                const existingUser = await UserModel.findOne({ email: updateUserDto.email });
+                if (existingUser && existingUser.id !== updateUserDto.id) {
+                    throw CustomError.badRequest("The email is already taken by another user.");
+                }
+            }
                         
             // Prevent non-admins from changing roles
             if (currentUserRole.includes('USER_ROLE') && !currentUserRole.includes('ADMIN_ROLE') && !currentUserRole.includes('SUPER_ADMIN_ROLE') && updateUserDto.role) {
