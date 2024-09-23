@@ -86,6 +86,21 @@ export class AuthRoutes {
  */
 
 /**
+ * @swagger
+ * /auth/send-validation-email:
+ *   post:
+ *     summary: Send a validation email to the user
+ *     tags: [Authentication]
+ *     responses:
+ *       "200":
+ *         description: Validation email sent successfully
+ *       "400":
+ *         description: Bad request
+ *       "404":
+ *         description: User not found
+ */
+
+/**
  * @swagger 
  * /auth/validate-email/{token}:
  *   get:
