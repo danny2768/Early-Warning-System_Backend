@@ -20,7 +20,7 @@ export class AuthService {
     private async sendEmailValidationLink( email: string ) {
         const token = await this.generateToken( { email } );        
 
-        const link = `${envs.BASE_URL}/api/auth/validate-email/${ token }`;
+        const link = `${envs.BASE_URL}/auth/validate-email/${ token }`;
         const html = `
             <h1>Validate your email</h1>
             <p>Click on the link below to validate your email</p>
@@ -81,33 +81,43 @@ export class AuthService {
     }
 
     public async sendValidationEmail( user: UserEntity ) {
-        // Validating if the user exists
-        const existsUser = await UserModel.findOne({ email: user.email });
+        try {
+            // Validating if the user exists
+            const existsUser = await UserModel.findOne({ email: user.email });
 
-        if (!existsUser) throw CustomError.internalServer('User not found');
-        if (existsUser.emailValidated) throw CustomError.badRequest('Email already validated');
+            if (!existsUser) throw CustomError.internalServer('User not found');
+            if (existsUser.emailValidated) throw CustomError.badRequest('Email already validated');
 
-        await this.sendEmailValidationLink( user.email );
+            await this.sendEmailValidationLink( user.email );
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);            
+        }
 
     }
 
     public async validateEmail( token: string ) {
-        // Validating if the token is valid
-        const payload =  await JwtAdapter.verifyToken( token );
-        if ( !payload ) throw CustomError.unauthorized('Invalid token');
+        try {
+            // Validating if the token is valid
+            const payload =  await JwtAdapter.verifyToken( token );
+            if ( !payload ) throw CustomError.unauthorized('Invalid token');
 
-        // Validating if the email is in the token
-        const { email } = payload as { email: string };
-        if ( !email ) throw CustomError.internalServer('Email not in token');
+            // Validating if the email is in the token
+            const { email } = payload as { email: string };
+            if ( !email ) throw CustomError.internalServer('Email not in token');
 
-        // Validating if the email exists in the database
-        const user = await UserModel.findOne({ email });
-        if ( !user ) throw CustomError.internalServer('User not found');
-        
-        user.emailValidated = true;
-        await user.save();
+            // Validating if the email exists in the database
+            const user = await UserModel.findOne({ email });
+            if ( !user ) throw CustomError.internalServer('User not found');
+            
+            user.emailValidated = true;
+            await user.save();
 
-        return true;
+            return true;
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);
+        }
     }
 
 }

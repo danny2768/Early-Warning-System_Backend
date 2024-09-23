@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
         },
         number: {
             type: String,
-            match: [/^\\d{7,15}$/, 'Please fill a valid phone number'] // Matches 7 to 15 digits
+            // match: [/^\\d{7,15}$/, 'Please fill a valid phone number'] // Matches 7 to 15 digits
         },
     },
 }, {    

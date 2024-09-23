@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { AuthController } from './controller';
 import { AuthService, EmailService } from '../services';
 import { envs } from '../../config';
+import { AuthMiddleware } from '../middlewares/auth.middleware';
 
 
 export class AuthRoutes {
@@ -21,7 +22,7 @@ export class AuthRoutes {
     
     router.post('/login', controller.loginUser );
     router.post('/register', controller.registerUser );
-    router.get('/send-validation-email', controller.sendValidationEmail );
+    router.get('/send-validation-email', [AuthMiddleware.validateAnyRoleToken], controller.sendValidationEmail );
     router.get('/validate-email/:token', controller.validateEmail );
 
 

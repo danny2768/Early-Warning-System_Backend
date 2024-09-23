@@ -73,6 +73,19 @@ export class AuthMiddleware {
         }
     }
 
+    static async validateAnyRoleToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = await AuthMiddleware.extractAndValidateToken(req);
+            req.body.user = UserEntity.fromObj(user);
+            next();
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message || 'Internal server error' });
+            if (error.status === 500 || !error.status) {
+                console.log(error);
+            }
+        }
+    }
+
     static async validateSuperAdminToken(req: Request, res: Response, next: NextFunction) {
         await AuthMiddleware.validateTokenWithRole(req, res, next, ['SUPER_ADMIN_ROLE']);
     }
