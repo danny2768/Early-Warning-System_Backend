@@ -13,13 +13,14 @@ export class SubscriptionsRoutes {
         const subscriptionService = new SubscriptionService(sharedService);
         const controller = new SubscriptionsController(subscriptionService);
 
-        router.get("/",            [ AuthMiddleware.validateAdminToken ], controller.getSubscriptions);
-        router.get("/by-user/:id", [ AuthMiddleware.validateSelfOrAdminToken ], controller.getSubscriptionByUserId);
-        router.get("/:id",         [ AuthMiddleware.validateAdminToken ], controller.getSubscriptionById);
-        router.post("/",           [ AuthMiddleware.validateUserToken ], controller.createSubscription); 
-        router.put("/:id",         [ AuthMiddleware.validateUserToken ], controller.updateSubscription);
-        router.delete("/:id",      [ AuthMiddleware.validateUserToken ], controller.deleteSubscription);
-        router.post("/add",        [ AuthMiddleware.validateUserToken ], controller.addSubscription);
+        router.get("/",                     [ AuthMiddleware.validateAdminToken ], controller.getSubscriptions);
+        router.get("/by-user/:id",          [ AuthMiddleware.validateSelfOrAdminToken ], controller.getSubscriptionByUserId);
+        router.get("/:id",                  [ AuthMiddleware.validateAdminToken ], controller.getSubscriptionById);
+        router.post("/",                    [ AuthMiddleware.validateUserToken ], controller.createSubscription); 
+        router.put("/:id",                  [ AuthMiddleware.validateUserToken ], controller.updateSubscription);
+        router.delete("/:id",               [ AuthMiddleware.validateUserToken ], controller.deleteSubscription);
+        router.delete("/remove-station/:id",[ AuthMiddleware.validateUserToken ], controller.removeStationFromSubscription);
+        router.post("/add",                 [ AuthMiddleware.validateUserToken ], controller.addSubscription);
 
         // Extra validations are being made in the service for the create, update and delete methods.
 
@@ -170,6 +171,28 @@ export class SubscriptionsRoutes {
  *     responses:
  *       "200":
  *         description: Subscription deleted successfully
+ *       "400":
+ *         description: Bad request
+ *       "404":
+ *         description: Subscription not found
+ */
+
+/**
+ * @swagger
+ * /api/subscriptions/remove-station/{StationId}:
+ *   delete:
+ *     summary: Remove a station from the current user's subscription
+ *     tags: [Subscriptions]
+ *     parameters:
+ *       - in: path
+ *         name: StationId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the station to remove
+ *     responses:
+ *       "200":
+ *         description: Subscription updated successfully
  *       "400":
  *         description: Bad request
  *       "404":

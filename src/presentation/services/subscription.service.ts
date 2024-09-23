@@ -199,6 +199,26 @@ export class SubscriptionService {
         }
     };
 
+    public async removeStationFromSubscription(stationId: string, currentUser: UserEntity) {
+        try {
+            await this.validateStationId(stationId);
+
+            const subscription = await SubscriptionModel.findOne({ userId: currentUser.id });
+            if (!subscription) throw CustomError.badRequest(`No subscription found for user ${currentUser.id}`);
+
+            const stationIndex = subscription.stationIds.indexOf(new mongoose.Types.ObjectId(stationId));
+            if (stationIndex === -1) throw CustomError.badRequest(`Station ${stationId} not found in subscription`);
+
+            subscription.stationIds.splice(stationIndex, 1);
+            await subscription.save();
+
+            return SubscriptionEntity.fromObj(subscription);
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);
+        }
+    }
+
     public async addSubscription(stationId: string, currentUser: UserEntity) {
         try {
             await this.validateStationId(stationId);
