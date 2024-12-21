@@ -19,16 +19,28 @@ The following environment variables are required for the application to run prop
 
 - `PORT`: The port on which the server will run.
 - `JWT_SECRET`: Secret key for JSON Web Token (JWT) authentication.
+- `BASE_URL`: The base URL of your application.
+- `NODE_ENV`: The environment in which your application is running (development, production, etc.).
+- `FRONTEND_ORIGIN`: The origin URL of your frontend application.
+
 - `SEND_EMAIL`: Boolean to enable/disable email sending.
 - `MAILER_SERVICE`: The email service used for sending emails. For example, if you're using Gmail, this would be 'gmail'.
 - `MAILER_EMAIL`: The email address used to send emails.
 - `MAILER_SECRET_KEY`: The secret key provided by your mailer service (e.g., Gmail) to authorize the application to send emails. This key is typically obtained through the service's developer console or API settings.
+
 - `MONGO_URL`: The URL of your MongoDB server.
 - `MONGO_DB_NAME`: The name of your MongoDB database.
 - `MONGO_USER`: The username for your MongoDB database.
 - `MONGO_PASS`: The password for your MongoDB database.
-- `BASE_URL`: The base URL of your application.
-- `NODE_ENV`: The environment in which your application is running (development, production, etc.).
+
+- `WHATSAPP_API_VERSION`: The API version for WhatsApp.
+- `WHATSAPP_PHONE_NUMBER_ID`: The phone number ID for WhatsApp.
+- `WHATSAPP_AUTH_TOKEN`: The authentication token for WhatsApp.
+
+- `MQTT_BROKER_URL`: The URL of your MQTT broker.
+- `MQTT_CLIENT_ID`: The client ID for your MQTT connection.
+- `MQTT_USERNAME`: The username for your MQTT connection.
+- `MQTT_PASSWORD`: The password for your MQTT connection.
 
 Please refer to the `.env.template` file and fill in the appropriate values.
 
