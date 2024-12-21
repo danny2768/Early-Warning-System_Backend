@@ -1,20 +1,19 @@
+import { envs } from './config/envs';
 import mqtt from 'mqtt';
 
-const mqttBrokerUrl = 'mqtt://junction.proxy.rlwy.net:19243';
+const client = mqtt.connect(envs.MQTT_BROKER_URL, {
+  clientId: envs.MQTT_CLIENT_ID,
+  clean: true,
+  connectTimeout: 4000,
+  username: envs.MQTT_USERNAME,
+  password: envs.MQTT_PASSWORD,
+  reconnectPeriod: 1000,
+});
+
 const dataTopic1 = 'esp32/estacion1';
 const configTopic1 = 'esp32/estacion1/config';
 const dataTopic2 = 'esp32/estacion2';  // Tópico para la estación 2
 const configTopic2 = 'esp32/estacion2/config';  // Tópico de configuración para la estación 2
-
-
-const client = mqtt.connect(mqttBrokerUrl, {
-  clientId: `mqtt_${Math.random().toString(16).slice(3)}`,
-  clean: true,
-  connectTimeout: 4000,
-  username: 'backend_user',
-  password: 'secret',
-  reconnectPeriod: 1000,
-});
 
 client.on('connect', () => {
   console.log('Connected to MQTT Broker');
