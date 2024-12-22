@@ -4,6 +4,8 @@ import { AppRoutes } from "./presentation/routes";
 import { Server } from "./presentation/server";
 import { MqttClient } from "./clients/mqtt.client";
 import { MqttService } from "./presentation/services/mqtt.service";
+import { WhatsappClient } from "./clients/whatsapp.client";
+import { RiverAlertType, WhatsappService } from "./presentation/services/whatsapp.service";
 
 (async() => {
     main();
@@ -26,6 +28,15 @@ async function main() {
 
     // Initialize MQTT service
     MqttService.initialize(mqttClient);
+
+    // Initialize whatsapp client
+    const whatsappClient = new WhatsappClient({
+        apiURL: `https://graph.facebook.com/${envs.WHATSAPP_API_VERSION}/${envs.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+        authToken: envs.WHATSAPP_AUTH_TOKEN,
+    })
+
+    // Initialize whatsapp service
+    WhatsappService.initialize(whatsappClient);
 
     // Initialize express server
     const server = new Server({
