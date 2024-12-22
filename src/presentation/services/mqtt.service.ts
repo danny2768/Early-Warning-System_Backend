@@ -1,4 +1,5 @@
 import { MqttClient } from "../../clients/mqtt.client";
+import { CustomError } from "../../domain";
 
 export interface StationSubscription {
     dataTopic: string;
@@ -59,6 +60,10 @@ export class MqttService {
     }
 
     static sendConfigMessage(configTopic: string, distInterval: number, flowInterval: number, waterInterval: number) {
+        if (!this.client) {
+            throw CustomError.internalServer('MQTT Client is not initialized');
+        }
+
         const configMessage = {
             action: 'update_interval',
             data: {
