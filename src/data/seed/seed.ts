@@ -101,10 +101,24 @@ async function main() {
     console.log('Sensors created');
 
     // 5. Create readings
-    const readings = await ReadingModel.insertMany(seedData.readings.map((reading, index) => ({
-        ...reading,
-        sensor: sensors[randomBetween0AndX(sensors.length)]._id,
-    })));
+    const readings: any = [];
+    const now = Date.now();
+    const tenDaysInMs = 10 * 24 * 60 * 60 * 1000;
+    const readingsAmount = 100;
+    const interval = tenDaysInMs / readingsAmount; // Spread readings over 10 days
+
+    for (const sensor of sensors) {
+        for (let i = 0; i < readingsAmount; i++) {
+            const reading = {
+                value: seedData.readings[randomBetween0AndX(seedData.readings.length)].value,
+                sensor: sensor._id,
+                createdAt: new Date(now - (i * interval)),
+            };
+            readings.push(reading);
+        }
+    }
+
+    await ReadingModel.insertMany(readings);
     console.log('Readings created');
 
     // 6. Create subscriptions
