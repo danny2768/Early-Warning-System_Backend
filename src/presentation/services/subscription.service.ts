@@ -94,16 +94,15 @@ export class SubscriptionService {
         try {
             const subscription = await SubscriptionModel.findOne({ userId: currentUser.id }).populate({
                 path: 'stationIds',
-                options: {
-                    skip: (page - 1) * limit,
-                    limit: limit
-                }
             });
-    
+            
             if (!subscription) throw CustomError.notFound(`No subscription found for user ${currentUser.id}`);
+
+            const [ total, stations ] = [ 
+                subscription.stationIds.length, 
+                subscription.stationIds.slice( (page - 1) * limit, page * limit ).map( station => StationEntity.fromObj(station) )
+            ];
     
-            const total = subscription.stationIds.length;
-            const stations = subscription.stationIds.map(station => StationEntity.fromObj(station));
             const totalPages = Math.ceil(total / limit);
     
             return {
@@ -244,6 +243,8 @@ export class SubscriptionService {
 
             const stationIndex = subscription.stationIds.indexOf(new mongoose.Types.ObjectId(stationId));
             if (stationIndex === -1) throw CustomError.badRequest(`Station ${stationId} not found in subscription`);
+
+            console.log(stationIndex)
 
             subscription.stationIds.splice(stationIndex, 1);
             await subscription.save();
