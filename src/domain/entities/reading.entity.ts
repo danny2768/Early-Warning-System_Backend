@@ -15,7 +15,7 @@ export class ReadingEntity {
         const { id, _id, value, sensor, createdAt, updatedAt, } = object;
 
         if (!id && !_id) throw CustomError.badRequest("Missing id");
-        if (!value) throw CustomError.badRequest("Missing value");
+        if (value === undefined || value === null) throw CustomError.badRequest("Missing value");
         if (!sensor) throw CustomError.badRequest("Missing sensor");                
         
         return new ReadingEntity( id || _id, value, sensor, createdAt, updatedAt, );
