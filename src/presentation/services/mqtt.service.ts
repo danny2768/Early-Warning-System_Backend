@@ -1,9 +1,22 @@
 import { MqttClient } from "../../clients/mqtt.client";
-import { CustomError } from "../../domain";
+import { CreateReadingDto, CustomError } from "../../domain";
+import { ReadingService } from "./reading.service";
+import { SharedService } from "./shared.service";
 
 export interface StationSubscription {
     dataTopic: string;
     configTopic: string;
+}
+
+interface DataMessage {
+    station: string;
+    sensors: Sensor[]
+}
+
+interface Sensor {
+    id: string;
+    value: number;
+    type: 'level' | 'flow' | 'rain';
 }
 
 const stations: StationSubscription[] = [
@@ -23,6 +36,11 @@ export class MqttService {
     static initialize(client: MqttClient) {
         this.client = client;
 
+        // Create a new instance of the shared service
+        const sharedService = new SharedService();
+        // Create a new instance of the reading service
+        const readingService = new ReadingService(sharedService);
+
         this.client.onConnect(() => {
             console.log('Connected to MQTT Broker');
 
@@ -39,12 +57,28 @@ export class MqttService {
 
         this.client.onMessage((topic, message) => {
             try {
-                const payload = JSON.parse(message.toString());
-                console.log(`Message received from topic ${topic}:`, payload);
+                // Parse the message
+                const payload: DataMessage = JSON.parse(message.toString());
+                console.log(`Message received from topic ${topic}:`);
 
+                // Process the message
                 stations.forEach(({ dataTopic, configTopic }) => {
                     if (topic === dataTopic) {
-                        console.log(`Processing data from ${dataTopic}`);
+                        
+                        payload.sensors.forEach(async (sensor) => {
+                            const { id, value, type } = sensor;
+                            const [ error, createReadingDto ] = CreateReadingDto.create({ value, sensor: id });
+                            
+                            if (error) {
+                                console.error(`Error creating reading for sensor ${id}:`, error, payload);
+                                return;
+                            }                    
+
+                            readingService.createReading(createReadingDto!)
+                                .then((reading) => console.log(`Reading created for sensor ${id}:`)) // TODO: Implement subscription to reading creation
+                                .catch((err) => console.error(`Error creating reading for sensor ${id}:`, err, payload));
+                        });
+
                     }
                     if (topic === configTopic) {
                         console.log(`Processing configuration message from ${configTopic}`);
