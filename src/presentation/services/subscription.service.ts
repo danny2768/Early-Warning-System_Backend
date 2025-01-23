@@ -124,6 +124,22 @@ export class SubscriptionService {
         }
     }
 
+    public async findUsersSubscribedToStation(stationId: string): Promise<UserEntity[]> {
+        try {
+            await this.validateStationId(stationId);
+
+            const subscriptions = await SubscriptionModel.find({ stationIds: stationId }).populate('userId');
+            const users = subscriptions.map(subscription => subscription.userId);
+
+            const usersObj = users.map(user => UserEntity.fromObj(user));
+
+            return usersObj;
+        } catch (error) {
+            if (error instanceof CustomError) throw error;
+            throw CustomError.internalServer(`${error}`);
+        }
+    }
+
     public async createSubscription( createSubscriptionDto: CreateSubscriptionDto, currentUser: UserEntity ) {                
         try {            
             // Check if the user is an admin

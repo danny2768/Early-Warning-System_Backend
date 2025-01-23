@@ -26,8 +26,15 @@ async function main() {
         password: envs.MQTT_PASSWORD,
     });
 
+    const mailerServiceOptions = {
+        mailerService: envs.MAILER_SERVICE,
+        mailerEmail: envs.MAILER_EMAIL,
+        senderEmailPassword: envs.MAILER_SECRET_KEY,
+        postToProvider: true,
+    }
+
     // Initialize MQTT service
-    MqttService.initialize(mqttClient);
+    MqttService.initialize(mqttClient, mailerServiceOptions);
 
     // Initialize whatsapp client
     const whatsappClient = new WhatsappClient({

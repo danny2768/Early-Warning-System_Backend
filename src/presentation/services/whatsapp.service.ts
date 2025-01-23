@@ -1,15 +1,9 @@
 import axios from 'axios';
 import { CustomError } from '../../domain';
 import { WhatsappClient } from '../../clients/whatsapp.client';
+import { RiverAlertType } from '../../domain/interfaces/enums';
 
-export enum RiverAlertType {
-    yellow = 'river_yellow_alert',
-    orange = 'river_orange_alert',
-    red = 'river_red_alert',
-    // falseAlarm = 'false_alarm_notification'
-}
-
-export interface sendAlertMessageOptions {
+export interface SendAlertMessageOptions {
     alertType: RiverAlertType;
     languageCode: 'en' | 'es';
     to: string;    
@@ -24,7 +18,7 @@ export class WhatsappService {
         this.client = client;
     }
 
-    async sendAlert(options: sendAlertMessageOptions): Promise<boolean> {
+    async sendAlert(options: SendAlertMessageOptions): Promise<boolean> {
         const { alertType, languageCode, to, region, organizationName } = options;
 
         if (!WhatsappService.client) {
