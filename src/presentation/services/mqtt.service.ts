@@ -48,8 +48,6 @@ export class MqttService {
     private static whatsappService: WhatsappService;
     private static emailService: EmailService;
     private static subscriptionService: SubscriptionService;
-    private static lastAlertTimes: Map<string, number> = new Map(); // Map to store last alert times
-    private static alertCooldown: number = 5 * 60 * 1000; // 5 minutes cooldown
 
     static initialize(client: MqttClient, mailerServiceOptions: MailerServiceOptions) {
         this.client = client;
@@ -131,29 +129,18 @@ export class MqttService {
 
         const sensor = SensorEntity.fromObj(sensorDB);
 
-        // Check cooldown
-        const lastAlertTime = this.lastAlertTimes.get(sensor.id) || 0;
-        const currentTime = Date.now();
-        if (currentTime - lastAlertTime < this.alertCooldown) {
-            console.log(`Alert for sensor ${sensor.id} is on cooldown`);
-            return;
-        }
-
         if (sensor.threshold?.red && reading.value > sensor.threshold.red) {
             this.sendAlerts(RiverAlertType.red, sensor);
-            this.lastAlertTimes.set(sensor.id, currentTime); // Update last alert time
             return;
         }
 
         if (sensor.threshold?.orange && reading.value > sensor.threshold.orange) {
             this.sendAlerts(RiverAlertType.orange, sensor);
-            this.lastAlertTimes.set(sensor.id, currentTime); // Update last alert time
             return;
         }
 
         if (sensor.threshold?.yellow && reading.value > sensor.threshold.yellow) {
             this.sendAlerts(RiverAlertType.yellow, sensor);
-            this.lastAlertTimes.set(sensor.id, currentTime); // Update last alert time
             return;
         }
     }
