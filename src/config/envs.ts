@@ -7,6 +7,7 @@ export const envs = {
     JWT_SECRET: get("JWT_SECRET").required().asString(),    
     BASE_URL: get("BASE_URL").required().asString(),
     FRONTEND_ORIGIN: get("FRONTEND_ORIGIN").required().asString(),
+    ALERT_INTERVAL: get("ALERT_INTERVAL").required().asString(),
     
     // Mongo
     MONGO_URL: get('MONGO_URL').required().asString(),

@@ -1,4 +1,5 @@
 import { MqttClient } from "../../clients/mqtt.client";
+import { envs } from "../../config";
 import { SensorModel, StationModel } from "../../data";
 import { CreateReadingDto, CustomError, ReadingEntity, SensorEntity, UserEntity } from "../../domain";
 import { RiverAlertType } from "../../domain/interfaces/enums";
@@ -48,6 +49,8 @@ export class MqttService {
     private static whatsappService: WhatsappService;
     private static emailService: EmailService;
     private static subscriptionService: SubscriptionService;
+
+    private static lastAlertTimes: { [sensorId: string]: { [alertType: string]: number } } = {};
 
     static initialize(client: MqttClient, mailerServiceOptions: MailerServiceOptions) {
         this.client = client;
@@ -163,6 +166,25 @@ export class MqttService {
     }
 
     private static async sendAlerts(alertType: RiverAlertType, sensor: SensorEntity) {
+        const now = Date.now();
+        // Get the alert interval from environment variables, defaulting to 1 minute (60000 ms) if not set.
+        const alertInterval = parseInt(envs.ALERT_INTERVAL || "60000", 10);
+
+        // Check if we have already sent an alert for this sensor and alert type recently.
+        if (this.lastAlertTimes[sensor.id] && this.lastAlertTimes[sensor.id][alertType]) {
+            const timeDiff = now - this.lastAlertTimes[sensor.id][alertType];
+            if (timeDiff < alertInterval) {
+                console.log(`Alert of type ${alertType} for sensor ${sensor.id} was sent ${timeDiff}ms ago; skipping new alert.`);
+                return;
+            }
+        }
+
+        // Update the last alert time before sending new alerts.
+        if (!this.lastAlertTimes[sensor.id]) {
+            this.lastAlertTimes[sensor.id] = {};
+        }
+        this.lastAlertTimes[sensor.id][alertType] = now;
+
         // Get station
         const station = await StationModel.findById(sensor.stationId);
 
