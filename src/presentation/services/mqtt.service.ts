@@ -129,19 +129,36 @@ export class MqttService {
 
         const sensor = SensorEntity.fromObj(sensorDB);
 
-        if (sensor.threshold?.red && reading.value > sensor.threshold.red) {
-            this.sendAlerts(RiverAlertType.red, sensor);
-            return;
-        }
-
-        if (sensor.threshold?.orange && reading.value > sensor.threshold.orange) {
-            this.sendAlerts(RiverAlertType.orange, sensor);
-            return;
-        }
-
-        if (sensor.threshold?.yellow && reading.value > sensor.threshold.yellow) {
-            this.sendAlerts(RiverAlertType.yellow, sensor);
-            return;
+        if (sensor.sensorType === "level") {
+            if (sensor.threshold?.red && reading.value <= sensor.threshold.red) {
+                this.sendAlerts(RiverAlertType.red, sensor);
+                return;
+            }
+    
+            if (sensor.threshold?.orange && reading.value <= sensor.threshold.orange) {
+                this.sendAlerts(RiverAlertType.orange, sensor);
+                return;
+            }
+    
+            if (sensor.threshold?.yellow && reading.value <= sensor.threshold.yellow) {
+                this.sendAlerts(RiverAlertType.yellow, sensor);
+                return;
+            }
+        } else {
+            if (sensor.threshold?.red && reading.value > sensor.threshold.red) {
+                this.sendAlerts(RiverAlertType.red, sensor);
+                return;
+            }
+    
+            if (sensor.threshold?.orange && reading.value > sensor.threshold.orange) {
+                this.sendAlerts(RiverAlertType.orange, sensor);
+                return;
+            }
+    
+            if (sensor.threshold?.yellow && reading.value > sensor.threshold.yellow) {
+                this.sendAlerts(RiverAlertType.yellow, sensor);
+                return;
+            }
         }
     }
 
