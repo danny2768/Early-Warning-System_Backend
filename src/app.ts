@@ -34,7 +34,7 @@ async function main() {
     }
 
     // Initialize MQTT service
-    // MqttService.initialize(mqttClient, mailerServiceOptions);
+    MqttService.initialize(mqttClient, mailerServiceOptions);
 
     // Initialize whatsapp client
     const whatsappClient = new WhatsappClient({
